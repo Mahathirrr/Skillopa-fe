@@ -98,12 +98,17 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky" className="bg-headerBg shadow-md">
-        <Toolbar className="h-20 px-4 lg:px-24 flex items-center justify-between">
-          <div className="flex items-center h-full justify-center">
-            {/* Logo and Title */}
-            <div className="flex items-center gap-2">
+        <Toolbar className="h-20 px-4 lg:px-24">
+          <div className="flex items-center lg:hidden">
+            <MobileMenu />
+          </div>
+          {/* Menggunakan h-full untuk memastikan tinggi penuh dan centralized */}
+          <div className="flex items-center h-full">
+            <div className="flex items-center h-full">
               <Logo variant="header" />
-              <h1 className="font-comedik text-2xl text-primary">Skillopa</h1>
+              <h1 className="font-comedik text-2xl text-primary -ml-1">
+                Skillopa
+              </h1>
             </div>
           </div>
           <div className="hidden lg:flex flex-1 items-center justify-center max-w-4xl mx-auto">

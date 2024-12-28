@@ -86,7 +86,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.8 }}
             >
               <Image
-                src="/assets/hero-illustration.svg"
+                src="/assets/3d-icon.png"
                 alt="Learning Illustration"
                 width={600}
                 height={500}

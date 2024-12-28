@@ -4,9 +4,9 @@ import { FaInstagram, FaGithub, FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-footerBg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+    <footer className="bg-footerBg mt-20">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Section */}
           <div className="space-y-4">
             <h3 className="font-comedik text-3xl text-primary">Skillopa</h3>
@@ -17,10 +17,10 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-comedik text-xl mb-4 text-white">
+            <h4 className="font-comedik text-xl mb-6 text-white">
               Quick Links
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               <li>
                 <Link href="/courses">
                   <a className="text-gray-400 hover:text-primary transition-colors">
@@ -47,17 +47,17 @@ const Footer = () => {
 
           {/* Connect Section */}
           <div>
-            <h4 className="font-comedik text-xl mb-4 text-white">
+            <h4 className="font-comedik text-xl mb-6 text-white">
               Connect with Developer
             </h4>
-            <div className="flex space-x-4">
+            <div className="flex space-x-6">
               <a
                 href="https://www.instagram.com/emhaa._"
                 target="_blank"
                 rel="noreferrer"
                 className="text-gray-400 hover:text-primary transition-all transform hover:scale-110"
               >
-                <FaInstagram size={24} />
+                <FaInstagram size={28} />
               </a>
               <a
                 href="https://github.com/Mahathirrr"
@@ -65,7 +65,7 @@ const Footer = () => {
                 rel="noreferrer"
                 className="text-gray-400 hover:text-primary transition-all transform hover:scale-110"
               >
-                <FaGithub size={24} />
+                <FaGithub size={28} />
               </a>
               <a
                 href="https://wa.me/+6281397181617"
@@ -73,14 +73,14 @@ const Footer = () => {
                 rel="noreferrer"
                 className="text-gray-400 hover:text-primary transition-all transform hover:scale-110"
               >
-                <FaWhatsapp size={24} />
+                <FaWhatsapp size={28} />
               </a>
             </div>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+        <div className="border-t border-gray-800 pt-8 text-center">
           <p className="text-gray-400">
             © {new Date().getFullYear()} Skillopa. Created with{" "}
             <span className="text-primary">♥</span> by{" "}

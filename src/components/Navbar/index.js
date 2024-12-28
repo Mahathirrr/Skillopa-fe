@@ -25,14 +25,18 @@ export default function Navbar() {
   const renderLinks = () => {
     if (isAuthenticated) {
       return (
-        <div className="hidden md:flex gap-8">
+        <div className="hidden md:flex items-center gap-8">
           {(profile?.role.includes("Instructor") || instructorProfile) && (
             <Link href="/instructor/courses">
-              <a className="nav-link font-comedik text-mainText">Instructor</a>
+              <a className="nav-link font-comedik text-mainText hover:text-primary transition-colors">
+                Instructor
+              </a>
             </Link>
           )}
           <Link href="/my-courses">
-            <a className="nav-link font-comedik text-mainText">My Learning</a>
+            <a className="nav-link font-comedik text-mainText hover:text-primary transition-colors">
+              My Learning
+            </a>
           </Link>
         </div>
       );
@@ -41,7 +45,7 @@ export default function Navbar() {
 
   const renderWishlistAndCart = () => {
     return (
-      <div className="flex mx-5 gap-4">
+      <div className="flex items-center mx-5 gap-4">
         <Link href="/wishlist" passHref>
           <IconButton
             size="large"
@@ -72,7 +76,7 @@ export default function Navbar() {
   const renderAuthCTAs = () => {
     if (!isAuthenticated) {
       return (
-        <div className="hidden md:flex gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <Link href="/login" passHref>
             <Button
               label="Sign In"
@@ -94,21 +98,18 @@ export default function Navbar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky" className="bg-headerBg shadow-md">
-        <Toolbar className="h-20 lg:px-24">
+        <Toolbar className="h-20 px-4 lg:px-24">
           <div className="flex items-center lg:hidden">
             <MobileMenu />
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Logo variant="header" />
-            <h1 className="font-comedik text-2xl text-mainText ml-2">
-              Skillopa
-            </h1>
+            <h1 className="font-comedik text-2xl text-primary">Skillopa</h1>
           </div>
-          <div className="hidden lg:flex w-1/2 items-center">
+          <div className="hidden lg:flex flex-1 items-center justify-center max-w-4xl mx-auto">
             <Submenu />
             <Searchbar />
           </div>
-          <Box sx={{ flexGrow: 1 }} />
           <div className="flex items-center">
             {renderLinks()}
             {renderWishlistAndCart()}

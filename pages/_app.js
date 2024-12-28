@@ -19,16 +19,25 @@ import "swiper/css/navigation";
 
 const theme = createTheme({
   palette: {
-    type: "light",
+    type: "dark",
     primary: {
-      main: "#382D8B",
+      main: "#6C63FF",
+      light: "#8B85FF",
     },
     secondary: {
-      main: "#8E24AA",
+      main: "#845EC2",
     },
-    body: "#FFFFFF",
-    text: { main: "#000000" },
-    bodyBg: { main: "#FFFFFF" },
+    accent: {
+      main: "#00C9A7",
+    },
+    background: {
+      default: "#0F1624",
+      paper: "#171E31",
+    },
+    text: {
+      primary: "#FFFFFF",
+      secondary: "#B8C1EC",
+    },
   },
 });
 
@@ -66,11 +75,11 @@ function App({ Component, pageProps }) {
           <title>Best online courses - Learn to succeed | learnlit</title>
           <meta
             name="description"
-            content="learnlit is an online learning and teaching marketplace with varied courses. Learn programming, software development, marketing, data science and more."
+            content="Skillopa is an online learning and teaching marketplace with varied courses. Learn programming, software development, marketing, data science and more."
           />
           <meta
             name="title"
-            content="Best online courses - Learn to succeed | learnlit"
+            content="Best online courses - Learn to succeed | Skillopa"
           />
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link
@@ -92,7 +101,7 @@ function App({ Component, pageProps }) {
           />
           <link rel="manifest" href="/site.webmanifest" />
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-          <meta name="theme-color" content="#ffffff" />
+          <meta name="theme-color" content="#0F1624" />
         </Head>
         <Component {...pageProps} />
       </ThemeProvider>
@@ -101,4 +110,3 @@ function App({ Component, pageProps }) {
 }
 
 export default wrapper.withRedux(App);
-

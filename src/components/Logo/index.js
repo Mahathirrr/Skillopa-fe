@@ -3,15 +3,14 @@ import Image from "next/image";
 
 const Logo = (props) => {
   const { variant } = props;
-
   const variants = {
     main: {
       width: 180,
       height: 70,
     },
     header: {
-      width: 150,
-      height: 40,
+      width: 70,
+      height: 70,
     },
     "header-md": {
       width: 145,
@@ -24,17 +23,27 @@ const Logo = (props) => {
   };
 
   return (
-    <div className={variant === "header" && "mt-2"}>
-      <Link href="/">
-        <a>
+    <Link href="/">
+      <a className="inline-flex items-center">
+        <div
+          className="logo-wrapper flex items-center justify-center"
+          style={{
+            width: `${variants[variant].width}px`,
+            height: `${variants[variant].height}px`,
+          }}
+        >
           <Image
             src="/assets/skillopa.svg"
             alt="skillopa"
-            {...variants[variant]}
+            layout="intrinsic"
+            width={variants[variant].width}
+            height={variants[variant].height}
+            objectFit="contain"
+            priority
           />
-        </a>
-      </Link>
-    </div>
+        </div>
+      </a>
+    </Link>
   );
 };
 

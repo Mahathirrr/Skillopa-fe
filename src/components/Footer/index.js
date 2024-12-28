@@ -82,8 +82,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-8 text-center">
           <p className="text-gray-400">
-            © {new Date().getFullYear()} Skillopa. Created with{" "}
-            <span className="text-primary">♥</span> by{" "}
+            © {new Date().getFullYear()} Skillopa. Code by{" "}
             <a
               href="https://github.com/Mahathirrr"
               target="_blank"

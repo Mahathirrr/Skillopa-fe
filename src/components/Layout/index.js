@@ -1,11 +1,10 @@
-import classnames from "classnames";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import Navbar from "src/components/Navbar";
 import CenterAligned from "src/components/CenterAligned";
 
 export default function Layout(props) {
-  const { containerClass, loading, error } = props;
+  const { loading, error } = props;
 
   if (loading) {
     return (

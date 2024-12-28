@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { FaInstagram, FaGithub, FaWhatsapp } from "react-icons/fa";
+import { FaInstagram, FaGithub, FaWhatsapp, FaDiscord } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -74,6 +74,14 @@ const Footer = () => {
                 className="text-gray-400 hover:text-primary transition-all transform hover:scale-110"
               >
                 <FaWhatsapp size={28} />
+              </a>
+              <a
+                href="https://discord.com/users/455894462699274241"
+                target="_blank"
+                rel="noreferrer"
+                className="text-gray-400 hover:text-primary transition-all transform hover:scale-110"
+              >
+                <FaDiscord size={28} />
               </a>
             </div>
           </div>

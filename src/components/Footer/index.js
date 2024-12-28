@@ -1,59 +1,98 @@
 import React from "react";
-
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-
-import Logo from "../Logo";
+import Link from "next/link";
+import { FaInstagram, FaGithub, FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <div className="bg-footerBg text-secondaryText px-8 xl:px-24 pt-16 pb-14">
-      <div className="flex flex-col md:flex-row gap-8 justify-between items-center">
-        <Logo variant="footer" />
-        <div className="flex divide-x-2 text-sm">
-          <p className="pr-3">About us</p>
-          <p className="px-3">Contact us</p>
-          <p className="px-3">Teach on skillopa</p>
-          <p className="px-3">Terms</p>
-          <p className="pl-3">Blog</p>
-        </div>
-      </div>
+    <footer className="bg-footerBg text-white">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="space-y-6">
+            <h3 className="font-comedik text-3xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+              Skillopa
+            </h3>
+            <p className="text-secondaryText">
+              Empowering creative minds through immersive learning experiences.
+            </p>
+          </div>
 
-      <div className="flex justify-between items-center text-sm mt-10">
-        <div className="flex gap-4 ml-4">
-          <a href="https://twitter.com/" target="_blank" rel="noreferrer">
-            <TwitterIcon fontSize="small" />
-          </a>
-          <a
-            href="http://instagram.com/emhaa._"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <InstagramIcon fontSize="small" />
-          </a>
-          <a href="http://facebook.com/" target="_blank" rel="noreferrer">
-            <FacebookIcon fontSize="small" />
-          </a>
-          <a href="http://youtube.com/" target="_blank" rel="noreferrer">
-            <YouTubeIcon fontSize="small" />
-          </a>
+          <div>
+            <h4 className="font-comedik text-xl mb-6 text-primary">
+              Quick Links
+            </h4>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/courses">
+                  <a className="text-secondaryText hover:text-primary transition-colors">
+                    Browse Courses
+                  </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/about">
+                  <a className="text-secondaryText hover:text-primary transition-colors">
+                    About Us
+                  </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact">
+                  <a className="text-secondaryText hover:text-primary transition-colors">
+                    Contact
+                  </a>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-comedik text-xl mb-6 text-primary">
+              Connect with Developer
+            </h4>
+            <div className="flex space-x-6">
+              <a
+                href="https://www.instagram.com/emhaa._"
+                target="_blank"
+                rel="noreferrer"
+                className="text-secondaryText hover:text-primary transition-transform hover:scale-110"
+              >
+                <FaInstagram size={24} />
+              </a>
+              <a
+                href="https://github.com/Mahathirrr"
+                target="_blank"
+                rel="noreferrer"
+                className="text-secondaryText hover:text-primary transition-transform hover:scale-110"
+              >
+                <FaGithub size={24} />
+              </a>
+              <a
+                href="https://wa.me/+6281397181617"
+                target="_blank"
+                rel="noreferrer"
+                className="text-secondaryText hover:text-primary transition-transform hover:scale-110"
+              >
+                <FaWhatsapp size={24} />
+              </a>
+            </div>
+          </div>
         </div>
-        <p>
-          Developed by{"  "}
-          <span className="text-primary">
+
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+          <p className="text-secondaryText">
+            © {new Date().getFullYear()} Skillopa. Created with 💜 by{" "}
             <a
-              href="https://www.linkedin.com/"
+              href="https://github.com/Mahathirrr"
               target="_blank"
               rel="noreferrer"
+              className="text-primary hover:text-primary/80 transition-colors"
             >
               Muhammad Mahathir
             </a>
-          </span>
-        </p>
+          </p>
+        </div>
       </div>
-    </div>
+    </footer>
   );
 };
 

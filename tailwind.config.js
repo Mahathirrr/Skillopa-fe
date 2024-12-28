@@ -1,39 +1,61 @@
-// const colors = require('tailwindcss/colors');
-
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}',
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     colors: {
-      primary: '#382D8B',
-      secondary: '#8E24AA',
-      mainText: '#000000',
-      secondaryText: '#FFFFFF',
-      primaryLight: '#b6adfc',
-      labelText: '#7C7C7D',
-      border: '#e7e9ed',
-      shimmer: '#e2e8f0',
-      ltBorder: '#d1d7dc',
-      bodyBg: '#FFFFFF',
-      footerBg: '#000000',
-      formBg: '#f8f9fa',
-      tertiaryBg: '#f1f1fc',
-      hoverBg: 'rgba(77, 79, 83, 0.4)',
-      headerBg: '#201f21', // #010b1f #241731 #14151d #201f21
-      error: '#d32f2f',
-      black: '#000',
-      white: '#fff',
+      primary: "#6C63FF",
+      secondary: "#845EC2",
+      accent: "#00C9A7",
+      mainText: "#FFFFFF",
+      secondaryText: "#B8C1EC",
+      primaryLight: "#8B85FF",
+      labelText: "#B8C1EC",
+      border: "#2A2D3E",
+      shimmer: "#2A2D3E",
+      ltBorder: "#2A2D3E",
+      bodyBg: "#0F1624",
+      footerBg: "#080B14",
+      formBg: "#171E31",
+      tertiaryBg: "#1A2138",
+      hoverBg: "rgba(108, 99, 255, 0.1)",
+      headerBg: "#0F1624",
+      error: "#FF6B6B",
+      black: "#000",
+      white: "#fff",
+      transparent: "transparent",
+    },
+    fontFamily: {
+      comedik: ["Comedik", "cursive"],
+      sans: ["Space Grotesk", "sans-serif"],
+      display: ["Comedik", "cursive"],
     },
     extend: {
-      fontSize: {
-        tiny: '.93rem',
+      animation: {
+        gradient: "gradient 8s linear infinite",
+        float: "float 6s ease-in-out infinite",
+        glow: "glow 2s ease-in-out infinite",
       },
-      width: {
-        '61/100': '61%',
-        '18/25': '72%',
-        '3/5': '74.3%',
+      keyframes: {
+        gradient: {
+          "0%, 100%": {
+            "background-size": "200% 200%",
+            "background-position": "left center",
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "right center",
+          },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+        glow: {
+          "0%, 100%": { opacity: 1 },
+          "50%": { opacity: 0.6 },
+        },
       },
     },
   },

@@ -22,7 +22,7 @@ const Submenu = () => {
     if (!menu) return null;
 
     return (
-      <div className="border border-border bg-bodyBg w-64 hidden group-hover:flex flex-col gap-4 mt-6 p-5">
+      <div className="border border-border bg-headerBg w-64 hidden group-hover:flex flex-col gap-4 mt-6 p-5 shadow-lg">
         {menu?.map((category, i) => (
           <Link href={category.url} key={i} passHref>
             <div
@@ -31,10 +31,14 @@ const Submenu = () => {
                   setActiveMenu(category?.subCategories);
                 }
               }}
-              className="flex justify-between item-center"
+              className="flex justify-between items-center cursor-pointer"
             >
-              <p className="hover:text-primary">{category.title}</p>
-              <p>{allowHover && <NavigateNextIcon fontSize="small" />}</p>
+              <p className="text-mainText hover:text-primary transition-colors">
+                {category.title}
+              </p>
+              {allowHover && (
+                <NavigateNextIcon fontSize="small" className="text-mainText" />
+              )}
             </div>
           </Link>
         ))}
@@ -44,11 +48,8 @@ const Submenu = () => {
 
   return (
     <div className="md:mx-3 lg:mx-8 py-6 cursor-pointer group">
-      <h3>Categories</h3>
-      <div
-        className="grid grid-cols-2 absolute drop-shadow-md z-10 h-96"
-        style={{ fontSize: "0.95rem" }}
-      >
+      <h3 className="font-comedik text-mainText">Categories</h3>
+      <div className="grid grid-cols-2 absolute drop-shadow-md z-10">
         {renderMenus(categories, true)}
         {renderMenus(activeMenu)}
       </div>

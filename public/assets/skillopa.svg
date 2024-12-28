@@ -25,12 +25,4 @@
        Z" 
     fill="white" 
     opacity="0.7"/>
-  <!-- Company Name - Increased size and adjusted position -->
-  <text x="350" y="170" 
-        font-family="Arial, sans-serif" 
-        font-size="130" 
-        font-weight="bold" 
-        fill="#5D3FD3">
-    Skillopa
-  </text>
 </svg>

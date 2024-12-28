@@ -14,6 +14,7 @@ import Searchbar from "../Searchbar";
 import Submenu from "./components/Submenu";
 import Button from "../Button";
 import ProfileMenu from "./components/ProfileMenu";
+import MobileMenu from "./components/MobileMenu";
 
 export default function Navbar() {
   const { isAuthenticated, profile } = useSelector((state) => state.auth);
@@ -27,11 +28,11 @@ export default function Navbar() {
         <div className="hidden md:flex gap-8">
           {(profile?.role.includes("Instructor") || instructorProfile) && (
             <Link href="/instructor/courses">
-              <a className="nav-link font-medium">Instructor</a>
+              <a className="nav-link font-comedik text-mainText">Instructor</a>
             </Link>
           )}
           <Link href="/my-courses">
-            <a className="nav-link font-medium">My Learning</a>
+            <a className="nav-link font-comedik text-mainText">My Learning</a>
           </Link>
         </div>
       );
@@ -76,13 +77,13 @@ export default function Navbar() {
             <Button
               label="Sign In"
               variant="outlined"
-              className="rounded-full hover:bg-primary/10"
+              className="rounded-full hover:bg-primary/10 font-comedik text-mainText"
             />
           </Link>
           <Link href="/signup" passHref>
             <Button
               label="Sign Up"
-              className="rounded-full bg-primary hover:bg-primary/90"
+              className="rounded-full bg-primary hover:bg-primary/90 font-comedik"
             />
           </Link>
         </div>
@@ -92,10 +93,18 @@ export default function Navbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-white shadow-sm">
+      <AppBar position="sticky" className="bg-headerBg shadow-md">
         <Toolbar className="h-20 lg:px-24">
-          <Logo variant="header" />
-          <div className="hidden md:flex w-1/2 items-center">
+          <div className="flex items-center lg:hidden">
+            <MobileMenu />
+          </div>
+          <div className="flex items-center">
+            <Logo variant="header" />
+            <h1 className="font-comedik text-2xl text-mainText ml-2">
+              Skillopa
+            </h1>
+          </div>
+          <div className="hidden lg:flex w-1/2 items-center">
             <Submenu />
             <Searchbar />
           </div>

@@ -54,8 +54,14 @@ body {
   flex-direction: column;
 }
 
+#__next {
+  min-height: 100vh;
+  background-color: var(--background-dark);
+}
+
 main {
   flex: 1;
+  background-color: var(--background-dark);
 }
 
 .home-title {

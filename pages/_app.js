@@ -14,18 +14,35 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
+// Definisikan tema dengan warna yang konsisten
 const theme = createTheme({
   palette: {
-    type: "light",
+    mode: "dark",
     primary: {
-      main: "#382D8B",
+      main: "#6C63FF",
+      light: "#8B85FF",
+      dark: "#382D8B",
     },
     secondary: {
-      main: "#8E24AA",
+      main: "#845EC2",
     },
-    body: "#FFFFFF",
-    text: { main: "#000000" },
-    bodyBg: { main: "#FFFFFF" },
+    background: {
+      default: "#0F1624",
+      paper: "#171E31",
+    },
+    text: {
+      primary: "#FFFFFF",
+      secondary: "#B8C1EC",
+    },
+  },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#0F1624",
+        },
+      },
+    },
   },
 });
 
@@ -50,7 +67,7 @@ function App({ Component, pageProps }) {
 
   if (loading) {
     return (
-      <div className="grid place-items-center h-screen">
+      <div className="grid place-items-center h-screen bg-bodyBg">
         <CircularProgress />
       </div>
     );
@@ -60,14 +77,14 @@ function App({ Component, pageProps }) {
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
       <ThemeProvider theme={theme}>
         <Head>
-          <title>Best online courses - Learn to succeed | learnlit</title>
+          <title>Best online courses - Learn to succeed | Skillopa</title>
           <meta
             name="description"
-            content="learnlit is an online learning and teaching marketplace with varied courses. Learn programming, software development, marketing, data science and more."
+            content="Skillopa is an online learning and teaching marketplace with varied courses. Learn programming, software development, marketing, data science and more."
           />
           <meta
             name="title"
-            content="Best online courses - Learn to succeed | learnlit"
+            content="Best online courses - Learn to succeed | Skillopa"
           />
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link
@@ -89,9 +106,11 @@ function App({ Component, pageProps }) {
           />
           <link rel="manifest" href="/site.webmanifest" />
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-          <meta name="theme-color" content="#ffffff" />
+          <meta name="theme-color" content="#0F1624" />
         </Head>
-        <Component {...pageProps} />
+        <div className="min-h-screen bg-bodyBg">
+          <Component {...pageProps} />
+        </div>
       </ThemeProvider>
     </GoogleOAuthProvider>
   );

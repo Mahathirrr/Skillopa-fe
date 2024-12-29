@@ -1,16 +1,48 @@
 export const interests = [
-  { type: 'subCategory', title: 'Web Development', slug: 'web-development' },
   {
-    type: 'subCategory',
-    title: 'User Experience Design',
-    slug: 'user-experience-design',
+    type: "category",
+    title: "Development",
+    slug: "development",
+    subCategories: [
+      {
+        type: "subCategory",
+        title: "Programming Languages",
+        slug: "programming-languages",
+      },
+      {
+        type: "subCategory",
+        title: "Web Development",
+        slug: "web-development",
+      },
+    ],
   },
-  { type: 'subCategory', title: 'Growth Hacking', slug: 'growth-hacking' },
-  { type: 'subCategory', title: 'Management', slug: 'management' },
-  { type: 'subCategory', title: 'Communication', slug: 'communication' },
   {
-    type: 'subCategory',
-    title: 'Digital Marketing',
-    slug: 'digital-marketing',
+    type: "category",
+    title: "Design",
+    slug: "design",
+    subCategories: [
+      {
+        type: "subCategory",
+        title: "User Experience Design",
+        slug: "user-experience-design",
+      },
+    ],
+  },
+  {
+    type: "category",
+    title: "Business",
+    slug: "business",
+    subCategories: [
+      {
+        type: "subCategory",
+        title: "Management",
+        slug: "management",
+      },
+      {
+        type: "subCategory",
+        title: "Digital Marketing",
+        slug: "digital-marketing",
+      },
+    ],
   },
 ];

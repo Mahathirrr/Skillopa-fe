@@ -11,7 +11,7 @@ import { getAllCourses } from "redux/slice/course";
 export default function Home() {
   const dispatch = useDispatch();
   const { isAuthenticated, profile } = useSelector((state) => state.auth);
-  const { allcourses } = useSelector((state) => state.courses);
+  // const { allcourses } = useSelector((state) => state.courses);
 
   useEffect(() => {
     dispatch(getAllCourses());
@@ -165,9 +165,19 @@ export default function Home() {
 
   const renderCourses = () => {
     if (!isAuthenticated) {
-      return interests.map((interest, i) => (
-        <SectionList interest={interest} key={i} />
-      ));
+      return interests.map((category) =>
+        category.subCategories.map((subCategory) => (
+          <SectionList
+            key={`${category.slug}-${subCategory.slug}`}
+            interest={{
+              type: "category",
+              title: category.title,
+              slug: category.slug,
+              subCategory: subCategory.slug,
+            }}
+          />
+        )),
+      );
     }
 
     if (isAuthenticated && profile.interests.length) {

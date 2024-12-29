@@ -1,47 +1,27 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import CourseCarousel from "../CourseCarousel";
+import { useCourseData } from "./useCourseData";
 
-import { getCategoryCourses } from "redux/slice/course";
+const SectionList = ({ interest }) => {
+  const courseData = useCourseData(interest);
 
-const SectionList = (props) => {
-  const {
-    interest: { type, title, slug },
-  } = props;
-
-  const dispatch = useDispatch();
-  const { categoryCourses } = useSelector((state) => state.courses);
-
-  useEffect(() => {
-    if (
-      title &&
-      !categoryCourses?.[title]?.loading &&
-      !categoryCourses?.[title]?.courses.length
-    ) {
-      dispatch(
-        getCategoryCourses({
-          stateName: title,
-          [type]: slug,
-        }),
-      );
-    }
-  }, [dispatch, title, type, slug, categoryCourses]);
-
-  // Jangan render apapun jika tidak ada course
-  if (
-    !categoryCourses?.[title]?.courses?.length &&
-    !categoryCourses?.[title]?.loading
-  ) {
+  // Skip rendering if no data or loading initial data
+  if (!courseData || (courseData.loading && !courseData.courses)) {
     return null;
   }
 
-  return (
-    <CourseCarousel
-      title={title}
-      data={categoryCourses?.[title]?.courses}
-      loading={categoryCourses?.[title]?.loading}
-    />
-  );
+  // Only render if we have courses
+  if (courseData.courses?.length > 0) {
+    return (
+      <CourseCarousel
+        title={`${interest.title} ${interest.subCategory ? "- " + interest.subCategory : ""}`}
+        data={courseData.courses}
+        loading={courseData.loading}
+      />
+    );
+  }
+
+  return null;
 };
 
-export default SectionList;
+export default React.memo(SectionList);

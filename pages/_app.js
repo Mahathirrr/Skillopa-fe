@@ -3,13 +3,10 @@ import Head from "next/head";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
-
 import { wrapper } from "redux/store";
 import { verifyToken } from "redux/slice/auth";
-
 import { isBrowser } from "src/utils";
 
 import "styles/globals.css";
@@ -19,16 +16,16 @@ import "swiper/css/navigation";
 
 const theme = createTheme({
   palette: {
-    type: "dark",
+    type: "light",
     primary: {
-      main: "#6C63FF",
+      main: "#382D8B",
     },
     secondary: {
-      main: "#845EC2",
+      main: "#8E24AA",
     },
-    body: "#0F1624",
-    text: { main: "#FFFFFF" },
-    bodyBg: { main: "#0F1624" },
+    body: "#FFFFFF",
+    text: { main: "#000000" },
+    bodyBg: { main: "#FFFFFF" },
   },
 });
 
@@ -91,8 +88,8 @@ function App({ Component, pageProps }) {
             href="/apple-touch-icon.png"
           />
           <link rel="manifest" href="/site.webmanifest" />
-          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#6C63FF" />
-          <meta name="theme-color" content="#0F1624" />
+          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+          <meta name="theme-color" content="#ffffff" />
         </Head>
         <Component {...pageProps} />
       </ThemeProvider>

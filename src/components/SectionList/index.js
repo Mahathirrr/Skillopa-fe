@@ -21,18 +21,25 @@ const SectionList = (props) => {
       dispatch(
         getCategoryCourses({
           stateName: title,
-          [type]: [slug],
+          [type]: slug,
         }),
       );
     }
-  }, [dispatch]);
+  }, [dispatch, title, type, slug, categoryCourses]);
+
+  // Jangan render apapun jika tidak ada course
+  if (
+    !categoryCourses?.[title]?.courses?.length &&
+    !categoryCourses?.[title]?.loading
+  ) {
+    return null;
+  }
 
   return (
     <CourseCarousel
       title={title}
       data={categoryCourses?.[title]?.courses}
       loading={categoryCourses?.[title]?.loading}
-      className="h-36"
     />
   );
 };

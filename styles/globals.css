@@ -239,6 +239,36 @@ main {
   animation: shimmer 1.5s infinite;
 }
 
+.swiper-pagination {
+  position: relative !important;
+  margin-top: 1rem;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--primary-color) !important;
+  background: rgba(15, 22, 36, 0.8);
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 20px !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: var(--primary-color);
+  color: white !important;
+}
+
+.swiper-pagination-bullet {
+  background: var(--primary-color) !important;
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;

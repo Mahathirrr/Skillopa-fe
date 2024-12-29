@@ -168,4 +168,19 @@ const CourseLandingPage = () => {
   );
 };
 
+// Add getStaticPaths
+export async function getStaticPaths() {
+  return {
+    paths: [], // No pre-rendered paths
+    fallback: "blocking", // Generate pages on-demand
+  };
+}
+
+// Add getStaticProps
+export async function getStaticProps() {
+  return {
+    props: {}, // Will be passed to the page component as props
+  };
+}
+
 export default CourseLandingPage;

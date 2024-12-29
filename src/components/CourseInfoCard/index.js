@@ -28,7 +28,7 @@ const CourseInfoCard = ({ course }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
         <div className="p-4 space-y-2">
-          <h3 className="font-comedik text-lg font-bold text-white line-clamp-2 min-h-[3.5rem]">
+          <h3 className="text-lg font-semibold text-white line-clamp-2 min-h-[3.5rem]">
             {course.title}
           </h3>
           <p className="text-secondaryText text-sm line-clamp-1">

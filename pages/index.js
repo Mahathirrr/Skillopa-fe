@@ -11,7 +11,6 @@ import { getAllCourses } from "redux/slice/course";
 export default function Home() {
   const dispatch = useDispatch();
   const { isAuthenticated, profile } = useSelector((state) => state.auth);
-  // const { allcourses } = useSelector((state) => state.courses);
 
   useEffect(() => {
     dispatch(getAllCourses());
@@ -19,11 +18,8 @@ export default function Home() {
 
   const renderHero = () => {
     return (
-      <div className="relative min-h-screen bg-bodyBg overflow-hidden">
-        {/* Animated background gradient */}
+      <div className="relative min-h-screen bg-bodyBg overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 animate-gradient"></div>
-
-        {/* Floating particles effect */}
         <div className="absolute inset-0">
           {[...Array(20)].map((_, i) => (
             <div
@@ -98,6 +94,7 @@ export default function Home() {
                 width={600}
                 height={500}
                 className="rounded-2xl"
+                priority
               />
             </motion.div>
           </motion.div>
@@ -192,7 +189,7 @@ export default function Home() {
       <Layout>
         {renderHero()}
         {renderFeatures()}
-        <div className="px-10 xl:px-0 py-20 bg-bodyBg" id="courses">
+        <div className="px-10 xl:px-20 py-20 bg-bodyBg" id="courses">
           {renderCourses()}
         </div>
       </Layout>

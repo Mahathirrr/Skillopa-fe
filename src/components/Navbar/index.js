@@ -77,17 +77,17 @@ export default function Navbar() {
     if (!isAuthenticated) {
       return (
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/login">
+          <Link href="/login" passHref>
             <Button
               label="Sign In"
               variant="outlined"
               className="rounded-full hover:bg-primary/10 font-comedik text-mainText"
             />
           </Link>
-          <Link href="/signup">
+          <Link href="/signup" passHref>
             <Button
               label="Sign Up"
-              className="rounded-full bg-primary hover:bg-primary/90 font-comedik text-mainText"
+              className="rounded-full bg-primary hover:bg-primary/90 font-comedik"
             />
           </Link>
         </div>

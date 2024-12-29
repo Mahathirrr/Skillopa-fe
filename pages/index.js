@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
+import { FaLightbulb, FaPuzzlePiece, FaRocket } from "react-icons/fa"; // Import icons dari react-icons
 import Layout from "src/components/Layout";
 import SectionList from "src/components/SectionList";
 import Footer from "src/components/Footer";
@@ -19,23 +20,48 @@ export default function Home() {
   const renderHero = () => {
     return (
       <div className="relative min-h-screen bg-bodyBg overflow-hidden flex items-center justify-center">
+        {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 animate-gradient"></div>
+
+        {/* Animated particles */}
         <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
+          {[...Array(30)].map((_, i) => (
+            <motion.div
               key={i}
-              className="absolute animate-glow bg-primary/20 rounded-full"
+              className="absolute w-2 h-2 bg-primary/30 rounded-full"
+              animate={{
+                scale: [1, 2, 1],
+                opacity: [0.3, 0.8, 0.3],
+                x: [0, Math.random() * 100 - 50],
+                y: [0, Math.random() * 100 - 50],
+              }}
+              transition={{
+                duration: Math.random() * 3 + 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 6 + 2}px`,
-                height: `${Math.random() * 6 + 2}px`,
-                animationDelay: `${Math.random() * 2}s`,
               }}
             />
           ))}
         </div>
 
+        {/* Animated mesh gradient */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent animate-pulse"></div>
+          <div
+            className="absolute inset-0 bg-gradient-to-tl from-secondary/20 to-transparent animate-pulse"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute inset-0 bg-gradient-to-tr from-accent/20 to-transparent animate-pulse"
+            style={{ animationDelay: "2s" }}
+          ></div>
+        </div>
+
+        {/* Rest of the hero content */}
         <div className="container mx-auto px-6 pt-32 pb-20 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -106,22 +132,22 @@ export default function Home() {
   const renderFeatures = () => {
     const features = [
       {
-        icon: "🚀",
-        title: "Interactive Learning",
+        icon: <FaLightbulb className="text-5xl text-yellow-400" />,
+        title: "Smart Learning",
         description:
-          "Immerse yourself in hands-on projects and real-world applications",
+          "Personalized learning paths and interactive content to help you master new skills effectively",
       },
       {
-        icon: "✨",
-        title: "Creative Freedom",
+        icon: <FaPuzzlePiece className="text-5xl text-green-400" />,
+        title: "Hands-on Practice",
         description:
-          "Express yourself through unique projects and innovative solutions",
+          "Real-world projects and exercises to apply your knowledge immediately",
       },
       {
-        icon: "🎯",
-        title: "Guided Journey",
+        icon: <FaRocket className="text-5xl text-blue-400" />,
+        title: "Fast Progress",
         description:
-          "Follow a structured path while maintaining your creative independence",
+          "Accelerated learning methods to help you achieve your goals quickly",
       },
     ];
 
@@ -147,7 +173,7 @@ export default function Home() {
                 transition={{ delay: index * 0.2, duration: 0.6 }}
                 className="bg-bodyBg p-8 rounded-2xl hover:transform hover:scale-105 transition-all duration-300"
               >
-                <div className="text-5xl mb-6">{feature.icon}</div>
+                <div className="mb-6">{feature.icon}</div>
                 <h3 className="font-comedik text-2xl mb-4 text-primary">
                   {feature.title}
                 </h3>

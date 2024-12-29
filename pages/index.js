@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import Layout from "src/components/Layout";
 import SectionList from "src/components/SectionList";
 import Footer from "src/components/Footer";
 import { interests } from "src/data/interests";
+import { getAllCourses } from "redux/slice/course";
 
 export default function Home() {
+  const dispatch = useDispatch();
   const { isAuthenticated, profile } = useSelector((state) => state.auth);
+  const { allcourses } = useSelector((state) => state.courses);
+
+  useEffect(() => {
+    dispatch(getAllCourses());
+  }, [dispatch]);
 
   const renderHero = () => {
     return (
@@ -156,7 +163,7 @@ export default function Home() {
     );
   };
 
-  const renderSections = () => {
+  const renderCourses = () => {
     if (!isAuthenticated) {
       return interests.map((interest, i) => (
         <SectionList interest={interest} key={i} />
@@ -176,7 +183,7 @@ export default function Home() {
         {renderHero()}
         {renderFeatures()}
         <div className="px-10 xl:px-0 py-20 bg-bodyBg" id="courses">
-          {renderSections()}
+          {renderCourses()}
         </div>
       </Layout>
       <Footer />

@@ -1,60 +1,66 @@
-import React from 'react';
-import Link from 'next/link';
-import { useForm, Controller } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import React from "react";
+import Link from "next/link";
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import ReCAPTCHA from "react-google-recaptcha";
 
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
-import Button from 'src/components/Button';
-import Input from 'src/components/Input';
-import Logo from 'src/components/Logo';
+import Button from "src/components/Button";
+import Input from "src/components/Input";
+import Logo from "src/components/Logo";
 
-import withoutAuth from 'src/components/HOC/withoutAuth';
+import withoutAuth from "src/components/HOC/withoutAuth";
 
-import { signup } from 'redux/slice/auth';
+import { signup } from "redux/slice/auth";
 
 function Signup() {
-  const {
-    control,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm();
+  const { control, handleSubmit } = useForm();
 
   const dispatch = useDispatch();
 
   const { loading, errorMessage } = useSelector((state) => state.auth);
+  const [captchaToken, setCaptchaToken] = React.useState(null);
 
   const onSubmit = (data) => {
-    dispatch(signup(data));
+    if (!captchaToken) {
+      alert("Please verify that you are not a robot");
+      return;
+    }
+    dispatch(signup({ ...data, captchaToken }));
+  };
+
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token);
   };
 
   const renderForm = () => {
     return (
-      <div className='grid place-items-center h-screen'>
-        <div className='w-9/12 md:w-1/2 lg:w-1/3 px-8 pt-12 pb-16 border-2 border-solid border-primary border-opacity-25 rounded-lg shadow-xl'>
-          <Logo variant='main' />
+      <div className="grid place-items-center h-screen">
+        <div className="w-9/12 md:w-1/2 lg:w-1/3 px-8 pt-12 pb-16 border-2 border-solid border-primary border-opacity-25 rounded-lg shadow-xl">
+          <Logo variant="main" />
 
-          <h2 className='text-2xl my-1.5 ml-1'>Signup</h2>
+          <h2 className="text-2xl my-1.5 ml-1">Signup</h2>
           {errorMessage && (
-            <Alert severity='error' className='mb-2'>
+            <Alert severity="error" className="mb-2">
               {errorMessage}
             </Alert>
           )}
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className='flex flex-col gap-2'
+            className="flex flex-col gap-2"
           >
             <Controller
-              name='name'
+              name="name"
               control={control}
               rules={{
-                required: 'Name is required.',
+                required: "Name is required.",
               }}
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  label='Name'
-                  type='name'
-                  placeholder='Name'
+                  label="Name"
+                  type="name"
+                  placeholder="Name"
                   error={!!error}
                   helperText={error ? error.message : null}
                   required
@@ -64,16 +70,16 @@ function Signup() {
             />
 
             <Controller
-              name='email'
+              name="email"
               control={control}
               rules={{
-                required: 'Email is required.',
+                required: "Email is required.",
               }}
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  label='Email'
-                  type='email'
-                  placeholder='Email'
+                  label="Email"
+                  type="email"
+                  placeholder="Email"
                   error={!!error}
                   helperText={error ? error.message : null}
                   required
@@ -83,24 +89,24 @@ function Signup() {
             />
 
             <Controller
-              name='password'
+              name="password"
               control={control}
               rules={{
                 required: true,
                 minLength: {
                   value: 6,
-                  message: 'Your password must be at least 6 characters.',
+                  message: "Your password must be at least 6 characters.",
                 },
                 maxLength: {
                   value: 20,
-                  message: 'Your password must be maximum 20 characters.',
+                  message: "Your password must be maximum 20 characters.",
                 },
               }}
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  label='Password'
-                  type='password'
-                  placeholder='Password'
+                  label="Password"
+                  type="password"
+                  placeholder="Password"
                   required
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -109,17 +115,26 @@ function Signup() {
               )}
             />
 
+            <div className="flex justify-center my-4">
+              <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                onChange={handleCaptchaChange}
+                theme="dark"
+              />
+            </div>
+
             <Button
-              label='Sign Up'
-              type='submit'
-              className='mt-5'
+              label="Sign Up"
+              type="submit"
+              className="mt-5"
               loading={loading}
+              disabled={!captchaToken}
             />
           </form>
-          <p className='text-center mt-5'>
-            Already have an account?{' '}
-            <Link href='/login'>
-              <a className='text-primary'>Sign in</a>
+          <p className="text-center mt-5">
+            Already have an account?{" "}
+            <Link href="/login">
+              <a className="text-primary">Sign in</a>
             </Link>
           </p>
         </div>

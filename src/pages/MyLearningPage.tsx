@@ -3,7 +3,7 @@ import { BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { api } from '@/lib/api'
+import { api, mediaUrl } from '@/lib/api'
 import { learnUrl } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
@@ -46,7 +46,7 @@ export function MyLearningPage() {
               >
                 {course.cover_image ? (
                   <img
-                    src={course.cover_image}
+                    src={mediaUrl(course.cover_image)}
                     alt={course.title}
                     className="aspect-video w-full object-cover transition group-hover:scale-105"
                   />

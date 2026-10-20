@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2 } from 'lucide-react'
+import { HelpCircle, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { UploadField } from '@/components/UploadField'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/auth'
 
@@ -12,12 +14,17 @@ export function CurriculumBuilderPage() {
   const courseId = Number(id)
   const { token } = useAuthStore()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const [sectionTitle, setSectionTitle] = useState('')
   const [lectureForms, setLectureForms] = useState<Record<number, {
     title: string
     video_url: string
+    file_url: string
+    local_media_path: string
     duration_seconds: string
+    content_type: string
+    available_at: string
   }>>({})
 
   const { data, isLoading } = useQuery({
@@ -47,17 +54,39 @@ export function CurriculumBuilderPage() {
 
   const addLectureMutation = useMutation({
     mutationFn: ({ sectionId, sortOrder }: { sectionId: number; sortOrder: number }) => {
-      const form = lectureForms[sectionId] ?? { title: '', video_url: '', duration_seconds: '0' }
+      const form = lectureForms[sectionId] ?? {
+        title: '',
+        video_url: '',
+        file_url: '',
+        local_media_path: '',
+        duration_seconds: '0',
+        content_type: 'video',
+        available_at: '',
+      }
       return api.createLecture(token!, courseId, sectionId, {
         title: form.title,
-        content_type: 'video',
-        video_url: form.video_url,
+        content_type: form.content_type,
+        video_url: form.video_url || undefined,
+        file_url: form.file_url || undefined,
+        local_media_path: form.local_media_path || undefined,
         duration_seconds: Number(form.duration_seconds) || 0,
         sort_order: sortOrder,
+        available_at: form.available_at || null,
       })
     },
     onSuccess: (_, { sectionId }) => {
-      setLectureForms((prev) => ({ ...prev, [sectionId]: { title: '', video_url: '', duration_seconds: '0' } }))
+      setLectureForms((prev) => ({
+        ...prev,
+        [sectionId]: {
+          title: '',
+          video_url: '',
+          file_url: '',
+          local_media_path: '',
+          duration_seconds: '0',
+          content_type: 'video',
+          available_at: '',
+        },
+      }))
       invalidate()
     },
   })
@@ -65,6 +94,18 @@ export function CurriculumBuilderPage() {
   const deleteLectureMutation = useMutation({
     mutationFn: ({ sectionId, lectureId }: { sectionId: number; lectureId: number }) =>
       api.deleteLecture(token!, courseId, sectionId, lectureId),
+    onSuccess: invalidate,
+  })
+
+  const dripMutation = useMutation({
+    mutationFn: ({
+      lectureId,
+      availableAt,
+    }: {
+      sectionId: number
+      lectureId: number
+      availableAt: string | null
+    }) => api.setLectureDripSchedule(token!, lectureId, availableAt),
     onSuccess: invalidate,
   })
 
@@ -107,7 +148,15 @@ export function CurriculumBuilderPage() {
 
       <div className="space-y-6">
         {curriculum.map((section) => {
-          const form = lectureForms[section.id] ?? { title: '', video_url: '', duration_seconds: '0' }
+          const form = lectureForms[section.id] ?? {
+            title: '',
+            video_url: '',
+            file_url: '',
+            local_media_path: '',
+            duration_seconds: '0',
+            content_type: 'video',
+            available_at: '',
+          }
           return (
             <div key={section.id} className="rounded border border-border bg-surface">
               <div className="flex items-center justify-between border-b border-border bg-bg px-4 py-3">
@@ -127,22 +176,50 @@ export function CurriculumBuilderPage() {
 
               <div className="divide-y divide-border">
                 {section.lectures?.map((lecture) => (
-                  <div key={lecture.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                    <span>{lecture.title}</span>
-                    <button
-                      type="button"
-                      onClick={() => deleteLectureMutation.mutate({ sectionId: section.id, lectureId: lecture.id })}
-                      className="text-muted hover:text-red-600"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                  <div key={lecture.id} className="px-4 py-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span>{lecture.title}</span>
+                      <div className="flex items-center gap-2">
+                        {lecture.content_type === 'quiz' && (
+                          <Link
+                            to={`/instructor/courses/${courseId}/lectures/${lecture.id}/quiz`}
+                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                          >
+                            <HelpCircle className="h-3.5 w-3.5" />
+                            {t('instructor.manageQuiz')}
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => deleteLectureMutation.mutate({ sectionId: section.id, lectureId: lecture.id })}
+                          className="text-muted hover:text-red-600"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <input
+                        type="datetime-local"
+                        defaultValue={lecture.available_at?.slice(0, 16) ?? ''}
+                        onChange={(e) =>
+                          dripMutation.mutate({
+                            sectionId: section.id,
+                            lectureId: lecture.id,
+                            availableAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                          })
+                        }
+                        className="rounded border border-border px-2 py-1 text-xs outline-none focus:border-primary"
+                      />
+                      <span className="text-xs text-muted">{t('instructor.dripSchedule')}</span>
+                    </div>
                   </div>
                 ))}
               </div>
 
               <div className="border-t border-border p-4">
                 <p className="mb-2 text-sm font-semibold">Add lecture</p>
-                <div className="grid gap-2 sm:grid-cols-3">
+                <div className="mb-2 grid gap-2 sm:grid-cols-2">
                   <input
                     placeholder="Lecture title"
                     value={form.title}
@@ -154,8 +231,23 @@ export function CurriculumBuilderPage() {
                     }
                     className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
                   />
+                  <select
+                    value={form.content_type}
+                    onChange={(e) =>
+                      setLectureForms((prev) => ({
+                        ...prev,
+                        [section.id]: { ...form, content_type: e.target.value },
+                      }))
+                    }
+                    className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                  >
+                    <option value="video">Video</option>
+                    <option value="text">Text</option>
+                    <option value="quiz">Quiz</option>
+                    <option value="assignment">Assignment</option>
+                  </select>
                   <input
-                    placeholder="Video URL"
+                    placeholder="Video URL (optional)"
                     value={form.video_url}
                     onChange={(e) =>
                       setLectureForms((prev) => ({
@@ -165,17 +257,47 @@ export function CurriculumBuilderPage() {
                     }
                     className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
                   />
+                  <p className="text-xs text-muted">
+                    Durasi video YouTube/Vimeo otomatis diambil dari link saat disimpan.
+                  </p>
                   <input
-                    placeholder="Duration (seconds)"
-                    type="number"
-                    value={form.duration_seconds}
+                    type="datetime-local"
+                    value={form.available_at}
                     onChange={(e) =>
                       setLectureForms((prev) => ({
                         ...prev,
-                        [section.id]: { ...form, duration_seconds: e.target.value },
+                        [section.id]: { ...form, available_at: e.target.value },
                       }))
                     }
                     className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="mb-2 flex flex-wrap gap-2">
+                  <UploadField
+                    category="video"
+                    accept="video/*"
+                    label={t('instructor.uploadVideo')}
+                    onUploaded={(file) =>
+                      setLectureForms((prev) => ({
+                        ...prev,
+                        [section.id]: {
+                          ...form,
+                          local_media_path: file.path,
+                          video_url: file.url,
+                        },
+                      }))
+                    }
+                  />
+                  <UploadField
+                    category="document"
+                    accept=".pdf,.doc,.docx"
+                    label={t('instructor.uploadDocument')}
+                    onUploaded={(file) =>
+                      setLectureForms((prev) => ({
+                        ...prev,
+                        [section.id]: { ...form, file_url: file.url },
+                      }))
+                    }
                   />
                 </div>
                 <button

@@ -3,7 +3,7 @@ import { ShoppingCart, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { api } from '@/lib/api'
+import { api, mediaUrl } from '@/lib/api'
 import { courseUrl, formatPrice } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
@@ -50,7 +50,7 @@ export function CartPage() {
               >
                 {course.cover_image ? (
                   <img
-                    src={course.cover_image}
+                    src={mediaUrl(course.cover_image)}
                     alt={course.title}
                     className="h-20 w-32 shrink-0 rounded object-cover"
                   />

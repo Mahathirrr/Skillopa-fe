@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { BookOpen, DollarSign, Plus, Users } from 'lucide-react'
+import { BarChart3, BookOpen, DollarSign, Megaphone, Plus, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -10,6 +10,12 @@ import { useAuthStore } from '@/stores/auth'
 export function InstructorDashboardPage() {
   const { token, user } = useAuthStore()
 
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+    queryKey: ['instructor-analytics'],
+    queryFn: () => api.getInstructorAnalytics(token!),
+    enabled: !!token,
+  })
+
   const { data, isLoading } = useQuery({
     queryKey: ['instructor-courses'],
     queryFn: () => api.listInstructorCourses(token!),
@@ -17,11 +23,12 @@ export function InstructorDashboardPage() {
   })
 
   const courses = data?.courses ?? []
-  const published = courses.filter((c) => c.is_published).length
-  const totalStudents = courses.reduce((sum, c) => sum + (c.enrollment_count ?? 0), 0)
-  const revenue = courses.reduce((sum, c) => sum + (c.is_free ? 0 : c.price * (c.enrollment_count ?? 0)), 0)
+  const analytics = analyticsData?.analytics
+  const published = analytics?.published_courses ?? courses.filter((c) => c.is_published).length
+  const totalStudents = analytics?.total_students ?? courses.reduce((sum, c) => sum + (c.enrollment_count ?? 0), 0)
+  const revenue = analytics?.total_revenue ?? courses.reduce((sum, c) => sum + (c.is_free ? 0 : c.price * (c.enrollment_count ?? 0)), 0)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading || analyticsLoading) return <LoadingSpinner />
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
@@ -45,7 +52,7 @@ export function InstructorDashboardPage() {
             <BookOpen className="h-5 w-5" />
             <span className="text-sm">Total courses</span>
           </div>
-          <p className="text-3xl font-bold">{courses.length}</p>
+          <p className="text-3xl font-bold">{analytics?.total_courses ?? courses.length}</p>
           <p className="text-xs text-muted">{published} published</p>
         </div>
         <div className="rounded border border-border bg-surface p-5">
@@ -62,6 +69,37 @@ export function InstructorDashboardPage() {
           </div>
           <p className="text-3xl font-bold">{formatPrice(revenue)}</p>
         </div>
+      </div>
+
+      <div className="mb-10 flex flex-wrap gap-3">
+        <Link
+          to="/instructor/analytics"
+          className="inline-flex items-center gap-2 rounded border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-bg"
+        >
+          <BarChart3 className="h-4 w-4 text-primary" />
+          Analytics
+        </Link>
+        <Link
+          to="/instructor/students"
+          className="inline-flex items-center gap-2 rounded border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-bg"
+        >
+          <Users className="h-4 w-4 text-primary" />
+          Students
+        </Link>
+        <Link
+          to="/instructor/announcements"
+          className="inline-flex items-center gap-2 rounded border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-bg"
+        >
+          <Megaphone className="h-4 w-4 text-primary" />
+          Announcements
+        </Link>
+        <Link
+          to="/instructor/courses"
+          className="inline-flex items-center gap-2 rounded border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-bg"
+        >
+          <BookOpen className="h-4 w-4 text-primary" />
+          All courses
+        </Link>
       </div>
 
       <h2 className="mb-4 text-xl font-bold">Recent courses</h2>

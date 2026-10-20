@@ -1,25 +1,52 @@
 import {
+  Bell,
   BookOpen,
-  GraduationCap,
   Heart,
+  Languages,
   LayoutDashboard,
   LogOut,
   Menu,
   Search,
+  Share2,
   ShoppingCart,
   User,
   X,
 } from 'lucide-react'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
+import { SkillopaLogo } from '@/components/SkillopaLogo'
+import { api } from '@/lib/api'
+import { setAppLocale } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 
 export function Navbar() {
-  const { isAuthenticated, isInstructor, user, logout } = useAuthStore()
+  const { isAuthenticated, isInstructor, isAdmin, user, token, logout } = useAuthStore()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const { t, i18n } = useTranslation()
   const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (location.pathname === '/courses') {
+      setQuery(searchParams.get('q') ?? '')
+    }
+  }, [location.pathname, searchParams])
+
+  const { data: unreadData } = useQuery({
+    queryKey: ['notifications-unread'],
+    queryFn: () => api.getUnreadNotificationCount(token!),
+    enabled: !!token && isAuthenticated,
+    refetchInterval: 60000,
+  })
+
+  const unreadCount = unreadData?.count ?? 0
+  const locale = i18n.language.startsWith('id') ? 'id' : 'en'
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -29,11 +56,76 @@ export function Navbar() {
     }
   }
 
+  function toggleLocale() {
+    const next = locale === 'en' ? 'id' : 'en'
+    setAppLocale(next)
+  }
+
+  const navLinks = (
+    <>
+      <Link to="/courses" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+        {t('nav.explore')}
+      </Link>
+      <Link to="/bundles" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+        {t('nav.bundles')}
+      </Link>
+      {isAuthenticated && (
+        <>
+          <Link
+            to="/my-learning"
+            className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
+          >
+            <BookOpen className="h-4 w-4" />
+            {t('nav.myLearning')}
+          </Link>
+          <Link to="/subscriptions" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+            {t('nav.subscriptions')}
+          </Link>
+          <Link to="/affiliate" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+            {t('nav.affiliate')}
+          </Link>
+          <Link to="/wishlist" className="rounded p-2 hover:bg-dark-muted" aria-label={t('nav.wishlist')}>
+            <Heart className="h-5 w-5" />
+          </Link>
+          <Link to="/cart" className="rounded p-2 hover:bg-dark-muted" aria-label={t('nav.cart')}>
+            <ShoppingCart className="h-5 w-5" />
+          </Link>
+          <Link
+            to="/notifications"
+            className="relative rounded p-2 hover:bg-dark-muted"
+            aria-label={t('nav.notifications')}
+          >
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </Link>
+          {isInstructor && (
+            <Link
+              to="/instructor/dashboard"
+              className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              {t('nav.instructor')}
+            </Link>
+          )}
+          {isAdmin && (
+            <Link to="/admin" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+              {t('nav.admin')}
+            </Link>
+          )}
+        </>
+      )}
+    </>
+  )
+
   return (
     <header className="sticky top-0 z-50 border-b border-dark-muted bg-dark text-white">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 lg:px-6">
         <Link to="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
-          <GraduationCap className="h-7 w-7 text-accent" />
+          <SkillopaLogo className="h-7 w-7" />
           <span className="hidden text-lg sm:inline">Skillopa</span>
         </Link>
 
@@ -52,96 +144,78 @@ export function Navbar() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for courses"
+              placeholder={t('nav.searchPlaceholder')}
               className="w-full rounded-full border border-transparent bg-white py-2 pl-10 pr-4 text-sm text-dark outline-none focus:border-accent"
             />
           </div>
         </form>
 
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
-          <Link
-            to="/courses"
-            className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
+          {navLinks}
+
+          <button
+            type="button"
+            onClick={toggleLocale}
+            className="inline-flex items-center gap-1 rounded px-2 py-2 text-sm font-medium hover:bg-dark-muted"
+            aria-label={t('nav.language')}
           >
-            Explore
-          </Link>
+            <Languages className="h-4 w-4" />
+            {locale.toUpperCase()}
+          </button>
 
           {isAuthenticated ? (
-            <>
-              <Link
-                to="/my-learning"
-                className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="flex items-center gap-2 rounded px-3 py-2 text-sm hover:bg-dark-muted"
+                aria-expanded={userMenuOpen}
               >
-                <BookOpen className="h-4 w-4" />
-                My Learning
-              </Link>
-              <Link
-                to="/wishlist"
-                className="rounded p-2 hover:bg-dark-muted"
-                aria-label="Wishlist"
-              >
-                <Heart className="h-5 w-5" />
-              </Link>
-              <Link to="/cart" className="rounded p-2 hover:bg-dark-muted" aria-label="Cart">
-                <ShoppingCart className="h-5 w-5" />
-              </Link>
-              {isInstructor && (
-                <Link
-                  to="/instructor/dashboard"
-                  className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Instructor
+                <User className="h-4 w-4" />
+                <span className="max-w-[120px] truncate">{user?.name}</span>
+              </button>
+              {userMenuOpen && (
+              <div className="absolute right-0 top-full z-50 min-w-[180px] rounded border border-border bg-surface py-1 text-dark shadow-lg">
+                <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-bg">
+                  {t('nav.profile')}
                 </Link>
-              )}
-              <div className="group relative">
+                <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-bg">
+                  {t('nav.orders')}
+                </Link>
+                <Link to="/certificates" className="block px-4 py-2 text-sm hover:bg-bg">
+                  {t('nav.certificates')}
+                </Link>
+                <Link to="/affiliate" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-bg">
+                  <Share2 className="h-3.5 w-3.5" />
+                  {t('nav.affiliate')}
+                </Link>
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded px-3 py-2 text-sm hover:bg-dark-muted"
+                  onClick={() => {
+                    logout()
+                    navigate('/')
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-bg"
                 >
-                  <User className="h-4 w-4" />
-                  <span className="max-w-[120px] truncate">{user?.name}</span>
+                  <LogOut className="h-4 w-4" />
+                  {t('nav.logout')}
                 </button>
-                <div className="invisible absolute right-0 top-full z-50 min-w-[180px] rounded border border-border bg-surface py-1 text-dark opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-bg"
-                  >
-                    Profile settings
-                  </Link>
-                  <Link
-                    to="/certificates"
-                    className="block px-4 py-2 text-sm hover:bg-bg"
-                  >
-                    Certificates
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout()
-                      navigate('/')
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-bg"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Log out
-                  </button>
-                </div>
               </div>
-            </>
+              )}
+            </div>
           ) : (
             <>
               <Link
                 to="/login"
-                className="rounded border border-white px-4 py-2 text-sm font-bold hover:bg-white hover:text-dark"
+                className="rounded border border-white px-4 py-2 text-sm font-bold text-white hover:bg-white hover:!text-[#1c1d1f]"
               >
-                Log in
+                {t('nav.login')}
               </Link>
               <Link
                 to="/register"
-                className="rounded bg-white px-4 py-2 text-sm font-bold text-dark hover:bg-accent"
+                className="btn-on-dark rounded px-4 py-2 text-sm font-bold hover:bg-accent hover:!text-[#1c1d1f]"
               >
-                Sign up
+                {t('nav.signup')}
               </Link>
             </>
           )}
@@ -156,36 +230,64 @@ export function Navbar() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for courses"
+                placeholder={t('nav.searchPlaceholder')}
                 className="w-full rounded-full bg-white py-2 pl-10 pr-4 text-sm text-dark"
               />
             </div>
           </form>
+          <button
+            type="button"
+            onClick={toggleLocale}
+            className="mb-3 flex w-full items-center gap-2 rounded px-3 py-2 hover:bg-dark-muted"
+          >
+            <Languages className="h-4 w-4" />
+            {t('nav.language')}: {locale.toUpperCase()}
+          </button>
           <div className="flex flex-col gap-1">
             <Link to="/courses" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-              Explore
+              {t('nav.explore')}
+            </Link>
+            <Link to="/bundles" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+              {t('nav.bundles')}
             </Link>
             {isAuthenticated ? (
               <>
                 <Link to="/my-learning" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  My Learning
+                  {t('nav.myLearning')}
+                </Link>
+                <Link to="/subscriptions" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+                  {t('nav.subscriptions')}
+                </Link>
+                <Link to="/affiliate" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+                  {t('nav.affiliate')}
                 </Link>
                 <Link to="/wishlist" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Wishlist
+                  {t('nav.wishlist')}
                 </Link>
                 <Link to="/cart" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Cart
+                  {t('nav.cart')}
+                </Link>
+                <Link to="/notifications" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+                  {t('nav.notifications')}{unreadCount > 0 ? ` (${unreadCount})` : ''}
+                </Link>
+                <Link to="/orders" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+                  {t('nav.orders')}
                 </Link>
                 {isInstructor && (
                   <Link to="/instructor/dashboard" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                    Instructor
+                    {t('nav.instructor')}
+                  </Link>
+                )}
+                {isAdmin && (
+                  <Link to="/admin" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
+                    {t('nav.admin')}
                   </Link>
                 )}
                 <Link to="/profile" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Profile
+                  {t('nav.profile')}
                 </Link>
                 <Link to="/certificates" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Certificates
+                  {t('nav.certificates')}
                 </Link>
                 <button
                   type="button"
@@ -196,16 +298,16 @@ export function Navbar() {
                   }}
                   className="rounded px-3 py-2 text-left hover:bg-dark-muted"
                 >
-                  Log out
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
               <>
                 <Link to="/login" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Log in
+                  {t('nav.login')}
                 </Link>
                 <Link to="/register" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  Sign up
+                  {t('nav.signup')}
                 </Link>
               </>
             )}

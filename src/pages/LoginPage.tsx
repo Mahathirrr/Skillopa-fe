@@ -1,12 +1,18 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
+import { AuthShell } from '@/components/AuthShell'
+import { AuthDivider, OAuthButtons } from '@/components/OAuthButtons'
 import { useAuthStore } from '@/stores/auth'
 
 export function LoginPage() {
   const { login, loading, error } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const { t } = useTranslation()
+  const oauthError = searchParams.get('oauth_error')
   const from = (location.state as { from?: string } | null)?.from ?? '/my-learning'
 
   const [email, setEmail] = useState('')
@@ -20,60 +26,66 @@ export function LoginPage() {
       const path = await login(email, password)
       navigate(from !== '/login' ? from : path)
     } catch {
-      setLocalError('Invalid email or password')
+      setLocalError(t('auth.invalidCredentials'))
     }
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-bg px-4 py-12">
-      <div className="w-full max-w-md rounded border border-border bg-surface p-8 shadow-sm">
-        <h1 className="mb-2 text-2xl font-bold text-dark">Log in to continue</h1>
-        <p className="mb-6 text-sm text-muted">
-          New to Skillopa?{' '}
+    <AuthShell
+      title={t('auth.loginTitle')}
+      subtitle={
+        <>
+          {t('auth.newToSkillopa')}{' '}
           <Link to="/register" className="font-bold text-primary hover:underline">
-            Sign up
+            {t('auth.signUpLink')}
           </Link>
-        </p>
+        </>
+      }
+    >
+      {(oauthError || error || localError) && (
+        <p className="mb-4 text-sm text-red-600">{oauthError || error || localError}</p>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-semibold">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border border-border px-3 py-2.5 outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-semibold">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border border-border px-3 py-2.5 outline-none focus:border-primary"
-            />
-          </div>
-          {(error || localError) && (
-            <p className="text-sm text-red-600">{error || localError}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
-          >
-            {loading ? 'Signing in...' : 'Log in'}
-          </button>
-        </form>
-      </div>
-    </div>
+      <OAuthButtons />
+      <AuthDivider />
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="mb-1 block text-sm font-semibold">
+            {t('auth.email')}
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-border px-3 py-2.5 outline-none focus:border-primary"
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="mb-1 block text-sm font-semibold">
+            {t('auth.password')}
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-border px-3 py-2.5 outline-none focus:border-primary"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full cursor-pointer rounded-lg bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+        >
+          {loading ? t('auth.signingIn') : t('auth.loginButton')}
+        </button>
+      </form>
+    </AuthShell>
   )
 }

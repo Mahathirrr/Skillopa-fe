@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { StarRating } from '@/components/StarRating'
 import type { Course } from '@/lib/api'
+import { mediaUrl } from '@/lib/api'
 import { cn, courseUrl, formatPrice } from '@/lib/utils'
 
 type Props = {
@@ -24,7 +25,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
       <Link to={courseUrl(course.slug)} className="relative block aspect-[16/9] overflow-hidden bg-dark-muted">
         {course.cover_image ? (
           <img
-            src={course.cover_image}
+            src={mediaUrl(course.cover_image)}
             alt={course.title}
             className="h-full w-full object-cover transition group-hover:scale-105"
           />
@@ -34,7 +35,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
           </div>
         )}
         {course.is_free && (
-          <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-xs font-bold text-dark">
+          <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-xs font-bold text-ink">
             Free
           </span>
         )}
@@ -42,7 +43,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
 
       <div className="flex flex-1 flex-col gap-2 p-3">
         <Link to={courseUrl(course.slug)}>
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-dark group-hover:text-primary">
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-ink group-hover:text-primary">
             {course.title}
           </h3>
         </Link>
@@ -51,7 +52,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
         )}
         <StarRating rating={course.rating_avg || 0} count={course.rating_count} />
         <div className="mt-auto flex items-center justify-between pt-1">
-          <span className="text-base font-bold text-dark">
+          <span className="text-base font-bold text-ink">
             {formatPrice(course.price, course.is_free)}
           </span>
           <div className="flex gap-1">
@@ -59,7 +60,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
               <button
                 type="button"
                 onClick={() => onToggleWishlist(course)}
-                className="rounded p-1.5 text-muted hover:bg-bg hover:text-primary"
+                className="cursor-pointer rounded p-1.5 text-muted hover:bg-bg hover:text-primary"
                 aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               >
                 <Heart className={cn('h-4 w-4', inWishlist && 'fill-primary text-primary')} />
@@ -69,7 +70,7 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
               <button
                 type="button"
                 onClick={() => onAddToCart(course)}
-                className="rounded p-1.5 text-muted hover:bg-bg hover:text-primary"
+                className="cursor-pointer rounded p-1.5 text-muted hover:bg-bg hover:text-primary"
                 aria-label="Add to cart"
               >
                 <ShoppingCart className="h-4 w-4" />

@@ -12,8 +12,9 @@ type AuthState = {
   error: string
   isAuthenticated: boolean
   isInstructor: boolean
+  isAdmin: boolean
   login: (email: string, password: string) => Promise<string>
-  register: (name: string, email: string, password: string, role?: UserRole) => Promise<string>
+  register: (name: string, email: string, password: string, role?: UserRole, referralCode?: string) => Promise<string>
   logout: () => void
   init: () => Promise<void>
   fetchMe: () => Promise<void>
@@ -32,6 +33,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   error: '',
   isAuthenticated: !!localStorage.getItem(TOKEN_KEY),
   isInstructor: false,
+  isAdmin: false,
 
   async login(email, password) {
     set({ loading: true, error: '' })
@@ -43,6 +45,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         user: res.user,
         isAuthenticated: true,
         isInstructor: res.user.role === 'instructor' || res.user.role === 'admin',
+        isAdmin: res.user.role === 'admin',
       })
       return redirectPathForRole(res.user.role)
     } catch (e) {
@@ -54,16 +57,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  async register(name, email, password, role = 'student') {
+  async register(name, email, password, role = 'student', referralCode) {
     set({ loading: true, error: '' })
     try {
-      const res = await api.register(name, email, password, role)
+      const res = await api.register(name, email, password, role, referralCode)
       localStorage.setItem(TOKEN_KEY, res.token)
       set({
         token: res.token,
         user: res.user,
         isAuthenticated: true,
         isInstructor: res.user.role === 'instructor' || res.user.role === 'admin',
+        isAdmin: res.user.role === 'admin',
       })
       return redirectPathForRole(res.user.role)
     } catch (e) {
@@ -77,7 +81,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout() {
     localStorage.removeItem(TOKEN_KEY)
-    set({ token: null, user: null, isAuthenticated: false, isInstructor: false, error: '' })
+    set({ token: null, user: null, isAuthenticated: false, isInstructor: false, isAdmin: false, error: '' })
   },
 
   async fetchMe() {
@@ -87,6 +91,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({
       user: res.user,
       isInstructor: res.user.role === 'instructor' || res.user.role === 'admin',
+      isAdmin: res.user.role === 'admin',
     })
   },
 
@@ -101,7 +106,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   setUser(user) {
-    set({ user, isInstructor: user.role === 'instructor' || user.role === 'admin' })
+    set({
+      user,
+      isInstructor: user.role === 'instructor' || user.role === 'admin',
+      isAdmin: user.role === 'admin',
+    })
   },
 }))
 

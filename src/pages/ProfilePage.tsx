@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { UploadField } from '@/components/UploadField'
 import { api } from '@/lib/api'
 import { ApiError } from '@/lib/api-error'
 import { useAuthStore } from '@/stores/auth'
@@ -105,15 +106,23 @@ export function ProfilePage() {
         </div>
         <div>
           <label htmlFor="avatar" className="mb-1 block text-sm font-semibold">
-            Avatar URL
+            Avatar
           </label>
-          <input
-            id="avatar"
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            placeholder="https://..."
-            className="w-full rounded border border-border px-3 py-2.5 outline-none focus:border-primary"
-          />
+          <div className="flex flex-col gap-2">
+            <UploadField
+              category="image"
+              accept="image/*"
+              label="Upload avatar"
+              onUploaded={(file) => setAvatarUrl(file.url ?? '')}
+            />
+            <input
+              id="avatar"
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+              placeholder="Or paste image URL"
+              className="w-full rounded border border-border px-3 py-2.5 outline-none focus:border-primary"
+            />
+          </div>
         </div>
         {message && (
           <p className={`text-sm ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>

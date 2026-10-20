@@ -1,18 +1,15 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { AuthShell } from '@/components/AuthShell'
-import { AuthDivider, OAuthButtons } from '@/components/OAuthButtons'
 import { useAuthStore } from '@/stores/auth'
 
 export function LoginPage() {
   const { login, loading, error } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
-  const [searchParams] = useSearchParams()
   const { t } = useTranslation()
-  const oauthError = searchParams.get('oauth_error')
   const from = (location.state as { from?: string } | null)?.from ?? '/my-learning'
 
   const [email, setEmail] = useState('')
@@ -42,12 +39,9 @@ export function LoginPage() {
         </>
       }
     >
-      {(oauthError || error || localError) && (
-        <p className="mb-4 text-sm text-red-600">{oauthError || error || localError}</p>
+      {(error || localError) && (
+        <p className="mb-4 text-sm text-red-600">{error || localError}</p>
       )}
-
-      <OAuthButtons />
-      <AuthDivider />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

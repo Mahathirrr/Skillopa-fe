@@ -1109,14 +1109,6 @@ export const api = {
     return request<{ file: UploadedFile }>('/uploads', { method: 'POST', formData, token })
   },
 
-  googleOAuthUrl() {
-    return `${API_URL}/auth/oauth/google`
-  },
-
-  githubOAuthUrl() {
-    return `${API_URL}/auth/oauth/github`
-  },
-
   listSubscriptionPlans() {
     return request<{ plans: SubscriptionPlan[] }>('/subscriptions/plans')
   },

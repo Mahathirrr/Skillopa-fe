@@ -18,7 +18,6 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { MyLearningPage } from '@/pages/MyLearningPage'
 import { NotificationsPage } from '@/pages/NotificationsPage'
-import { OAuthCallbackPage } from '@/pages/OAuthCallbackPage'
 import { OrdersPage } from '@/pages/OrdersPage'
 import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage'
 import { ProfilePage } from '@/pages/ProfilePage'
@@ -46,7 +45,7 @@ export const router = createBrowserRouter([
       { path: 'certificates/verify/:code', element: <CertificateVerifyPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
-      { path: 'auth/callback', element: <OAuthCallbackPage /> },
+      { path: 'auth/callback', element: <Navigate to="/login" replace /> },
       { path: 'payment/success', element: <PaymentSuccessPage /> },
       {
         element: <ProtectedRoute />,

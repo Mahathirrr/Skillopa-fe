@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { AuthShell } from '@/components/AuthShell'
-import { AuthDivider, OAuthButtons } from '@/components/OAuthButtons'
 import { useAuthStore } from '@/stores/auth'
 
 export function RegisterPage() {
@@ -43,9 +42,6 @@ export function RegisterPage() {
           {t('auth.referralApplied')}: <strong>{refCode}</strong>
         </p>
       )}
-
-      <OAuthButtons referralCode={refCode || undefined} />
-      <AuthDivider />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

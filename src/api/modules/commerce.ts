@@ -69,10 +69,30 @@ export const commerceApi = {
     return request<{ order: Order }>(`/orders/${orderId}`, { token })
   },
 
+  getPaymentStatus() {
+    return request<{
+      enabled: boolean
+      sandbox: boolean
+      provider: string
+      demo_confirm_enabled: boolean
+    }>('/payments/status')
+  },
+
   createOrderCheckout(token: string, courseIds: number[], couponCode?: string) {
-    return request<{ order: Order }>('/orders/checkout', {
+    return request<{ order: Order; payment_url?: string; sandbox?: boolean }>('/orders/checkout', {
       method: 'POST',
       body: { course_ids: courseIds, coupon_code: couponCode || undefined },
+      token,
+    })
+  },
+
+  syncOrder(token: string, orderId: number) {
+    return request<{ order: Order }>(`/orders/${orderId}/sync`, { method: 'POST', token })
+  },
+
+  simulateSandboxOrder(token: string, orderId: number) {
+    return request<{ message: string }>(`/payments/sandbox/orders/${orderId}/simulate`, {
+      method: 'POST',
       token,
     })
   },

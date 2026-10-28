@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Package, Tag } from 'lucide-react'
+import { ExternalLink, Package, Tag } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -20,6 +20,14 @@ export function CheckoutPage() {
   const [couponMsg, setCouponMsg] = useState('')
   const [selectedBundleId, setSelectedBundleId] = useState('')
   const [pendingOrderId, setPendingOrderId] = useState<number | null>(null)
+  const [paymentURL, setPaymentURL] = useState<string | null>(null)
+
+  const { data: paymentStatus } = useQuery({
+    queryKey: ['payment-status'],
+    queryFn: () => api.getPaymentStatus(),
+  })
+  const mayarEnabled = paymentStatus?.provider === 'mayar'
+  const demoConfirm = paymentStatus?.demo_confirm_enabled === true
 
   const { data: bundlesData } = useQuery({
     queryKey: ['bundles'],
@@ -73,6 +81,10 @@ export function CheckoutPage() {
           appliedCoupon?.code,
         )
         setPendingOrderId(res.order.id)
+        if (res.payment_url) {
+          setPaymentURL(res.payment_url)
+          window.open(res.payment_url, '_blank', 'noopener,noreferrer')
+        }
         return
       }
       await enrollFreeCourses()
@@ -87,12 +99,15 @@ export function CheckoutPage() {
     },
   })
 
-  const confirmDemoMutation = useMutation({
+  const completeMayarMutation = useMutation({
     mutationFn: async () => {
-      if (pendingOrderId == null) {
-        throw new Error('missing order')
+      if (pendingOrderId == null) throw new Error('missing order')
+      if (mayarEnabled) {
+        await api.simulateSandboxOrder(token!, pendingOrderId)
+        await api.syncOrder(token!, pendingOrderId)
+      } else if (demoConfirm) {
+        await api.confirmOrder(token!, pendingOrderId)
       }
-      await api.confirmOrder(token!, pendingOrderId)
       if (freeCourses.length > 0) {
         await enrollFreeCourses()
       }
@@ -101,6 +116,16 @@ export function CheckoutPage() {
     onError: (e) => {
       setError(e instanceof ApiError ? e.message : t('common.error'))
     },
+  })
+
+  const syncOnlyMutation = useMutation({
+    mutationFn: async () => {
+      if (pendingOrderId == null) throw new Error('missing order')
+      await api.syncOrder(token!, pendingOrderId)
+      if (freeCourses.length > 0) await enrollFreeCourses()
+    },
+    onSuccess: () => navigate('/my-learning'),
+    onError: (e) => setError(e instanceof ApiError ? e.message : t('common.error')),
   })
 
   const bundleCheckoutMutation = useMutation({
@@ -129,7 +154,14 @@ export function CheckoutPage() {
             ))}
           </ul>
 
-          {paidCourses.length > 0 && (
+          {paidCourses.length > 0 && mayarEnabled && (
+            <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
+              <p className="font-semibold text-amber-800 dark:text-amber-200">{t('checkout.mayarSandbox')}</p>
+              <p className="mt-1 text-muted">{t('checkout.mayarSandboxDesc')}</p>
+            </div>
+          )}
+
+          {paidCourses.length > 0 && demoConfirm && !mayarEnabled && (
             <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
               <p className="font-semibold text-primary">{t('checkout.demoCheckout')}</p>
               <p className="mt-1 text-muted">{t('checkout.demoCheckoutDesc')}</p>
@@ -215,14 +247,48 @@ export function CheckoutPage() {
           )}
 
           {pendingOrderId != null ? (
-            <button
-              type="button"
-              onClick={() => confirmDemoMutation.mutate()}
-              disabled={confirmDemoMutation.isPending}
-              className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
-            >
-              {confirmDemoMutation.isPending ? t('checkout.processing') : t('checkout.confirmDemoPayment')}
-            </button>
+            <div className="space-y-3">
+              {paymentURL && (
+                <a
+                  href={paymentURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded border border-primary py-2.5 text-sm font-bold text-primary hover:bg-primary/5"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  {t('checkout.openMayarPayment')}
+                </a>
+              )}
+              {mayarEnabled ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => completeMayarMutation.mutate()}
+                    disabled={completeMayarMutation.isPending}
+                    className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+                  >
+                    {completeMayarMutation.isPending ? t('checkout.processing') : t('checkout.mayarSimulateAndSync')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => syncOnlyMutation.mutate()}
+                    disabled={syncOnlyMutation.isPending}
+                    className="w-full rounded border border-border py-2 text-sm font-semibold hover:bg-surface-muted disabled:opacity-60"
+                  >
+                    {t('checkout.syncPayment')}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => completeMayarMutation.mutate()}
+                  disabled={completeMayarMutation.isPending || !demoConfirm}
+                  className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+                >
+                  {completeMayarMutation.isPending ? t('checkout.processing') : t('checkout.confirmDemoPayment')}
+                </button>
+              )}
+            </div>
           ) : (
             <button
               type="button"
@@ -236,7 +302,9 @@ export function CheckoutPage() {
               {checkoutMutation.isPending
                 ? t('checkout.processing')
                 : paidCourses.length > 0
-                  ? t('checkout.placeDemoOrder')
+                  ? mayarEnabled
+                    ? t('checkout.placeMayarOrder')
+                    : t('checkout.placeDemoOrder')
                   : t('checkout.confirmFreeEnroll')}
             </button>
           )}

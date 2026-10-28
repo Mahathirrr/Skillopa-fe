@@ -11,7 +11,7 @@ import {
   Play,
   StickyNote,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -24,6 +24,38 @@ import { formatDuration } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
 type SideTab = 'content' | 'notes' | 'bookmarks' | 'qa'
+
+function LectureNoteEditor({
+  initialContent,
+  saving,
+  onSave,
+}: {
+  initialContent: string
+  saving: boolean
+  onSave: (content: string) => void
+}) {
+  const [noteContent, setNoteContent] = useState(initialContent)
+
+  return (
+    <div className="flex flex-1 flex-col p-4">
+      <textarea
+        value={noteContent}
+        onChange={(e) => setNoteContent(e.target.value)}
+        placeholder="Take notes for this lecture..."
+        rows={12}
+        className="mb-3 flex-1 rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+      />
+      <button
+        type="button"
+        onClick={() => onSave(noteContent)}
+        disabled={saving}
+        className="rounded bg-primary py-2 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+      >
+        Save notes
+      </button>
+    </div>
+  )
+}
 
 function QuizPanel({ lectureId, token, onComplete }: { lectureId: number; token: string; onComplete: () => void }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
@@ -242,7 +274,6 @@ export function CourseLearnPage() {
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set())
   const [activeLecture, setActiveLecture] = useState<Lecture | null>(null)
   const [sideTab, setSideTab] = useState<SideTab>('content')
-  const [noteContent, setNoteContent] = useState('')
   const [bookmarkNote, setBookmarkNote] = useState('')
 
   const { data, isLoading, error } = useQuery({
@@ -252,10 +283,10 @@ export function CourseLearnPage() {
   })
 
   const course = data?.course
-  const curriculum = data?.curriculum ?? []
+  const curriculum = data?.curriculum
 
   const allLectures = useMemo(
-    () => curriculum.flatMap((s) => s.lectures ?? []),
+    () => (curriculum ?? []).flatMap((s) => s.lectures ?? []),
     [curriculum],
   )
 
@@ -295,10 +326,6 @@ export function CourseLearnPage() {
     enabled: !!token && !!course?.id,
   })
 
-  useEffect(() => {
-    setNoteContent(noteData?.note?.content ?? '')
-  }, [noteData, activeLecture?.id])
-
   const completeMutation = useMutation({
     mutationFn: (lectureId: number) =>
       api.updateProgress(token!, course!.id, { lecture_id: lectureId }),
@@ -309,7 +336,7 @@ export function CourseLearnPage() {
   })
 
   const saveNoteMutation = useMutation({
-    mutationFn: () => api.saveLectureNote(token!, activeLecture!.id, noteContent),
+    mutationFn: (content: string) => api.saveLectureNote(token!, activeLecture!.id, content),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['lecture-note', activeLecture!.id] }),
   })
 
@@ -514,7 +541,7 @@ export function CourseLearnPage() {
                   </div>
                 </div>
               )}
-              {curriculum.map((section: Section) => {
+              {(curriculum ?? []).map((section: Section) => {
                 const open = expandedSections.has(section.id) || expandedSections.size === 0
                 return (
                   <div key={section.id} className="border-b border-border">
@@ -563,24 +590,13 @@ export function CourseLearnPage() {
           </>
         )}
 
-        {sideTab === 'notes' && current && token && (
-          <div className="flex flex-1 flex-col p-4">
-            <textarea
-              value={noteContent}
-              onChange={(e) => setNoteContent(e.target.value)}
-              placeholder="Take notes for this lecture..."
-              rows={12}
-              className="mb-3 flex-1 rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
-            />
-            <button
-              type="button"
-              onClick={() => saveNoteMutation.mutate()}
-              disabled={saveNoteMutation.isPending}
-              className="rounded bg-primary py-2 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
-            >
-              Save notes
-            </button>
-          </div>
+        {sideTab === 'notes' && current && token && activeLecture && (
+          <LectureNoteEditor
+            key={activeLecture.id}
+            initialContent={noteData?.note?.content ?? ''}
+            saving={saveNoteMutation.isPending}
+            onSave={(content) => saveNoteMutation.mutate(content)}
+          />
         )}
 
         {sideTab === 'bookmarks' && token && (

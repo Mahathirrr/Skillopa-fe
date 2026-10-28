@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -16,23 +16,17 @@ const SORT_OPTIONS = [
   { value: 'price_desc', labelKey: 'catalog.sortPriceDesc' },
 ] as const
 
-export function CatalogPage() {
+function CatalogSearchInput({
+  q,
+  params,
+  setParams,
+}: {
+  q: string
+  params: URLSearchParams
+  setParams: Dispatch<SetStateAction<URLSearchParams>>
+}) {
   const { t } = useTranslation()
-  const [params, setParams] = useSearchParams()
-  const q = params.get('q') ?? ''
-  const categoryId = params.get('category_id') ?? ''
-  const level = params.get('level') ?? ''
-  const minPrice = params.get('min_price') ?? ''
-  const maxPrice = params.get('max_price') ?? ''
-  const minRating = params.get('min_rating') ?? ''
-  const maxDuration = params.get('max_duration') ?? ''
-  const sort = params.get('sort') ?? ''
-
   const [searchInput, setSearchInput] = useState(q)
-
-  useEffect(() => {
-    setSearchInput(q)
-  }, [q])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -45,6 +39,31 @@ export function CatalogPage() {
     }, 350)
     return () => window.clearTimeout(timer)
   }, [searchInput, q, params, setParams])
+
+  return (
+    <div className="relative flex-1">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+      <input
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        placeholder={t('catalog.searchPlaceholder')}
+        className="w-full rounded border border-border bg-surface py-2.5 pl-10 pr-4 outline-none focus:border-primary"
+      />
+    </div>
+  )
+}
+
+export function CatalogPage() {
+  const { t } = useTranslation()
+  const [params, setParams] = useSearchParams()
+  const q = params.get('q') ?? ''
+  const categoryId = params.get('category_id') ?? ''
+  const level = params.get('level') ?? ''
+  const minPrice = params.get('min_price') ?? ''
+  const maxPrice = params.get('max_price') ?? ''
+  const minRating = params.get('min_rating') ?? ''
+  const maxDuration = params.get('max_duration') ?? ''
+  const sort = params.get('sort') ?? ''
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
@@ -103,15 +122,7 @@ export function CatalogPage() {
       </div>
 
       <div className="mb-6 flex flex-col gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder={t('catalog.searchPlaceholder')}
-            className="w-full rounded border border-border bg-surface py-2.5 pl-10 pr-4 outline-none focus:border-primary"
-          />
-        </div>
+        <CatalogSearchInput key={q} q={q} params={params} setParams={setParams} />
         <div className="flex flex-wrap gap-3">
           <select
             value={categoryId}

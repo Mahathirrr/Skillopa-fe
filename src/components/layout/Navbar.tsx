@@ -6,17 +6,17 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Search,
   Share2,
   ShoppingCart,
   User,
   X,
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
+import { NavbarSearch } from '@/components/layout/NavbarSearch'
 import { SkillopaLogo } from '@/components/SkillopaLogo'
 import { api } from '@/lib/api'
 import { setAppLocale } from '@/i18n'
@@ -28,15 +28,12 @@ export function Navbar() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const { t, i18n } = useTranslation()
-  const [query, setQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
-  useEffect(() => {
-    if (location.pathname === '/courses') {
-      setQuery(searchParams.get('q') ?? '')
-    }
-  }, [location.pathname, searchParams])
+  const catalogSearchKey =
+    location.pathname === '/courses' ? `catalog-${searchParams.get('q') ?? ''}` : 'nav-global'
+  const catalogInitialQ = location.pathname === '/courses' ? (searchParams.get('q') ?? '') : ''
 
   const { data: unreadData } = useQuery({
     queryKey: ['notifications-unread'],
@@ -48,12 +45,10 @@ export function Navbar() {
   const unreadCount = unreadData?.count ?? 0
   const locale = i18n.language.startsWith('id') ? 'id' : 'en'
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (query.trim()) {
-      navigate(`/courses?q=${encodeURIComponent(query.trim())}`)
-      setMenuOpen(false)
-    }
+  function submitSearch(q: string) {
+    if (!q) return
+    navigate(`/courses?q=${encodeURIComponent(q)}`)
+    setMenuOpen(false)
   }
 
   function toggleLocale() {
@@ -138,17 +133,12 @@ export function Navbar() {
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        <form onSubmit={handleSearch} className="hidden flex-1 lg:flex">
-          <div className="relative w-full max-w-xl">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('nav.searchPlaceholder')}
-              className="w-full rounded-full border border-transparent bg-white py-2 pl-10 pr-4 text-sm text-dark outline-none focus:border-accent"
-            />
-          </div>
-        </form>
+        <NavbarSearch
+          key={catalogSearchKey}
+          initialQuery={catalogInitialQ}
+          onSubmit={submitSearch}
+          className="hidden flex-1 lg:flex"
+        />
 
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {navLinks}
@@ -224,17 +214,12 @@ export function Navbar() {
 
       {menuOpen && (
         <div className="border-t border-dark-muted px-4 py-4 lg:hidden">
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t('nav.searchPlaceholder')}
-                className="w-full rounded-full bg-white py-2 pl-10 pr-4 text-sm text-dark"
-              />
-            </div>
-          </form>
+          <NavbarSearch
+            key={`mobile-${catalogSearchKey}`}
+            initialQuery={catalogInitialQ}
+            onSubmit={submitSearch}
+            className="mb-4"
+          />
           <button
             type="button"
             onClick={toggleLocale}

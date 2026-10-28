@@ -25,7 +25,10 @@ export function AffiliatePage() {
     enabled: !!token,
   })
 
-  const commissions = commissionsData?.commissions ?? []
+  const commissions = useMemo(
+    () => commissionsData?.commissions ?? [],
+    [commissionsData],
+  )
 
   const stats = useMemo(() => {
     const paid = commissions.filter((c) => c.status === 'paid')

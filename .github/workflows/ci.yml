@@ -18,3 +18,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: VITE_API_URL= npm run build
+      - run: npx playwright install chromium --with-deps
+      - run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npm run test:e2e

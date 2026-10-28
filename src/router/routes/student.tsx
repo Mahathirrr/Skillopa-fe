@@ -1,18 +1,30 @@
 import type { RouteObject } from 'react-router-dom'
 
 import { ProtectedRoute } from '@/components/ProtectedRoute'
-import { AffiliatePage } from '@/pages/AffiliatePage'
-import { CartPage } from '@/pages/CartPage'
-import { CertificatesPage } from '@/pages/CertificatesPage'
-import { CheckoutPage } from '@/pages/CheckoutPage'
-import { CourseLearnPage } from '@/pages/CourseLearnPage'
-import { GiftCoursePage } from '@/pages/GiftCoursePage'
-import { MyLearningPage } from '@/pages/MyLearningPage'
-import { NotificationsPage } from '@/pages/NotificationsPage'
-import { OrdersPage } from '@/pages/OrdersPage'
-import { ProfilePage } from '@/pages/ProfilePage'
-import { SubscriptionsPage } from '@/pages/SubscriptionsPage'
-import { WishlistPage } from '@/pages/WishlistPage'
+import { lazyPage } from '@/router/lazy'
+
+const CourseLearnPage = lazyPage(() =>
+  import('@/pages/CourseLearnPage').then((m) => ({ default: m.CourseLearnPage })),
+)
+const CartPage = lazyPage(() => import('@/pages/CartPage').then((m) => ({ default: m.CartPage })))
+const CheckoutPage = lazyPage(() => import('@/pages/CheckoutPage').then((m) => ({ default: m.CheckoutPage })))
+const WishlistPage = lazyPage(() => import('@/pages/WishlistPage').then((m) => ({ default: m.WishlistPage })))
+const MyLearningPage = lazyPage(() =>
+  import('@/pages/MyLearningPage').then((m) => ({ default: m.MyLearningPage })),
+)
+const ProfilePage = lazyPage(() => import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })))
+const CertificatesPage = lazyPage(() =>
+  import('@/pages/CertificatesPage').then((m) => ({ default: m.CertificatesPage })),
+)
+const OrdersPage = lazyPage(() => import('@/pages/OrdersPage').then((m) => ({ default: m.OrdersPage })))
+const NotificationsPage = lazyPage(() =>
+  import('@/pages/NotificationsPage').then((m) => ({ default: m.NotificationsPage })),
+)
+const SubscriptionsPage = lazyPage(() =>
+  import('@/pages/SubscriptionsPage').then((m) => ({ default: m.SubscriptionsPage })),
+)
+const GiftCoursePage = lazyPage(() => import('@/pages/GiftCoursePage').then((m) => ({ default: m.GiftCoursePage })))
+const AffiliatePage = lazyPage(() => import('@/pages/AffiliatePage').then((m) => ({ default: m.AffiliatePage })))
 
 export const studentRoutes: RouteObject = {
   element: <ProtectedRoute />,

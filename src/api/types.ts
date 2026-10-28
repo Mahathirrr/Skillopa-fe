@@ -368,6 +368,17 @@ export type AdminStats = {
   pending_refunds: number
 }
 
+export type AuditEvent = {
+  id: number
+  actor_user_id?: number | null
+  action: string
+  entity_type: string
+  entity_id?: string
+  meta?: Record<string, unknown>
+  ip?: string
+  created_at: string
+}
+
 export type CourseStudent = {
   user_id: number
   name: string

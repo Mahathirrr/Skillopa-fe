@@ -205,7 +205,13 @@
     "demoCheckout": "Platform demo checkout",
     "demoCheckoutDesc": "No live payment gateway — place a pending order, then confirm to simulate payment and unlock course access.",
     "placeDemoOrder": "Place demo order",
+    "placeMayarOrder": "Continue to Mayar payment",
     "confirmDemoPayment": "Confirm demo payment",
+    "mayarSandbox": "Mayar sandbox payment",
+    "mayarSandboxDesc": "After checkout, complete payment on Mayar (test mode). Then simulate or sync to unlock courses.",
+    "openMayarPayment": "Open Mayar payment page",
+    "mayarSimulateAndSync": "Simulate sandbox payment & sync",
+    "syncPayment": "Sync payment status",
     "bundleOption": "Or enroll in a free bundle",
     "selectBundle": "Select bundle",
     "enrollBundle": "Enroll in bundle"

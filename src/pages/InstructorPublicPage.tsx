@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { ExternalLink, User } from 'lucide-react'
 
 import { CourseCard } from '@/components/CourseCard'
+import { InstructorStats } from '@/components/InstructorStats'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api, mediaUrl } from '@/lib/api'
 
@@ -63,7 +64,6 @@ export function InstructorPublicPage() {
     )
   }
 
-  const hasRating = instructor.total_reviews > 0 && (instructor.average_rating ?? 0) > 0
   const courses = coursesData?.courses ?? []
   const total = coursesData?.total ?? 0
   const socialLinks = [
@@ -101,16 +101,14 @@ export function InstructorPublicPage() {
         <div className="min-w-0 flex-1">
           <h1 className="text-3xl font-bold">{instructor.name}</h1>
           {instructor.headline && <p className="mt-1 text-lg text-muted">{instructor.headline}</p>}
-          <ul className="mt-4 flex flex-wrap gap-4 text-sm">
-            <li>{t('instructor.statCourses', { count: instructor.published_courses ?? 0 })}</li>
-            <li>{t('instructor.statStudents', { count: instructor.total_students })}</li>
-            <li>{t('instructor.statReviews', { count: instructor.total_reviews })}</li>
-            <li>
-              {hasRating
-                ? t('instructor.statRating', { rating: (instructor.average_rating ?? 0).toFixed(1) })
-                : t('instructor.noRating')}
-            </li>
-          </ul>
+          <InstructorStats
+            className="mt-4"
+            publishedCourses={instructor.published_courses ?? 0}
+            totalStudents={instructor.total_students}
+            totalReviews={instructor.total_reviews}
+            averageRating={instructor.average_rating ?? 0}
+            showReviews
+          />
           {instructor.bio && (
             <div className="mt-4 max-w-3xl text-muted">
               <p className={bioExpanded ? 'whitespace-pre-line' : 'line-clamp-4 whitespace-pre-line'}>

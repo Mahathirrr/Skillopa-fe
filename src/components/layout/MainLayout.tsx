@@ -16,7 +16,7 @@ export function MainLayout() {
   return (
     <>
       <Navbar />
-      <main className={`flex-1 ${certificateFocus ? 'certificate-focus-main' : ''}`}>
+      <main className={`flex-1 overflow-x-hidden ${certificateFocus ? 'certificate-focus-main' : ''}`}>
         <Outlet />
       </main>
       {!certificateFocus ? <Footer /> : null}

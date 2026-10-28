@@ -165,10 +165,19 @@
   "bundles": {
     "title": "Paket kursus",
     "subtitle": "Hemat lebih banyak dengan paket kursus pilihan",
+    "about": "Paket kursus menggabungkan beberapa kursus dalam satu tema (misalnya fullstack atau data & desain) dengan harga lebih hemat dibanding membeli satuan.",
     "buyBundle": "Beli paket",
     "coursesIncluded": "{{count}} kursus termasuk",
     "checkout": "Checkout paket",
-    "empty": "Belum ada paket tersedia."
+    "empty": "Belum ada paket tersedia.",
+    "retailTotal": "Total jika beli satuan: {{total}}",
+    "youSave": "Hemat {{amount}}",
+    "paidCheckoutHint": "Setelah masuk, checkout Mayar untuk kursus berbayar; semua kursus di paket ini tercantum di atas.",
+    "loginToBuy": "Masuk untuk membeli",
+    "freeEnroll": "Daftar paket gratis",
+    "emptyCourses": "Paket ini belum berisi kursus.",
+    "browseCourse": "Lihat kursus",
+    "unavailable": "Paket tidak tersedia"
   },
   "gift": {
     "title": "Hadiahkan kursus",

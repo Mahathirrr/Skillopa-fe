@@ -165,10 +165,19 @@
   "bundles": {
     "title": "Course bundles",
     "subtitle": "Save more with curated course packages",
+    "about": "Bundles group related courses (e.g. fullstack or data & design) at a lower combined price than buying individually.",
     "buyBundle": "Buy bundle",
     "coursesIncluded": "{{count}} courses included",
     "checkout": "Checkout bundle",
-    "empty": "No bundles available yet."
+    "empty": "No bundles available yet.",
+    "retailTotal": "If bought separately: {{total}}",
+    "youSave": "You save {{amount}}",
+    "paidCheckoutHint": "After signing in, use Mayar checkout for paid courses listed above.",
+    "loginToBuy": "Sign in to purchase",
+    "freeEnroll": "Enroll in free bundle",
+    "emptyCourses": "This bundle has no courses yet.",
+    "browseCourse": "View a course",
+    "unavailable": "Bundle unavailable"
   },
   "gift": {
     "title": "Gift a course",

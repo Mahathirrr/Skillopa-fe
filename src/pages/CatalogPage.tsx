@@ -1,12 +1,13 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { CourseCard } from '@/components/CourseCard'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api, type CourseListParams } from '@/lib/api'
+import { cn } from '@/lib/utils'
 
 const SORT_OPTIONS = [
   { value: '', labelKey: 'catalog.sortNewest' },
@@ -15,6 +16,9 @@ const SORT_OPTIONS = [
   { value: 'price_asc', labelKey: 'catalog.sortPriceAsc' },
   { value: 'price_desc', labelKey: 'catalog.sortPriceDesc' },
 ] as const
+
+const filterFieldClass =
+  'w-full min-w-0 rounded border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary'
 
 function CatalogSearchInput({
   q,
@@ -41,7 +45,7 @@ function CatalogSearchInput({
   }, [searchInput, q, params, setParams])
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex-1 min-w-0">
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
       <input
         value={searchInput}
@@ -50,6 +54,23 @@ function CatalogSearchInput({
         className="w-full rounded border border-border bg-surface py-2.5 pl-10 pr-4 outline-none focus:border-primary"
       />
     </div>
+  )
+}
+
+function FilterField({
+  label,
+  children,
+  className,
+}: {
+  label: string
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <label className={cn('flex min-w-0 flex-col gap-1', className)}>
+      <span className="text-xs font-medium text-muted">{label}</span>
+      {children}
+    </label>
   )
 }
 
@@ -123,74 +144,88 @@ export function CatalogPage() {
 
       <div className="mb-6 flex flex-col gap-4">
         <CatalogSearchInput key={q} q={q} params={params} setParams={setParams} />
-        <div className="flex flex-wrap gap-3">
-          <select
-            value={categoryId}
-            onChange={(e) => updateParam('category_id', e.target.value)}
-            className="rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          >
-            <option value="">{t('catalog.allCategories')}</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={level}
-            onChange={(e) => updateParam('level', e.target.value)}
-            className="rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          >
-            <option value="">{t('catalog.allLevels')}</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-          <input
-            type="number"
-            min="0"
-            placeholder={t('catalog.minPrice')}
-            value={minPrice}
-            onChange={(e) => updateParam('min_price', e.target.value)}
-            className="w-28 rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          />
-          <input
-            type="number"
-            min="0"
-            placeholder={t('catalog.maxPrice')}
-            value={maxPrice}
-            onChange={(e) => updateParam('max_price', e.target.value)}
-            className="w-28 rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          />
-          <input
-            type="number"
-            min="0"
-            max="5"
-            step="0.1"
-            placeholder={t('catalog.minRating')}
-            value={minRating}
-            onChange={(e) => updateParam('min_rating', e.target.value)}
-            className="w-28 rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          />
-          <input
-            type="number"
-            min="0"
-            placeholder={t('catalog.maxDuration')}
-            value={maxDuration}
-            onChange={(e) => updateParam('max_duration', e.target.value)}
-            className="w-36 rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          />
-          <select
-            value={sort}
-            onChange={(e) => updateParam('sort', e.target.value)}
-            className="rounded border border-border bg-surface px-3 py-2.5 outline-none focus:border-primary"
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value || 'default'} value={opt.value}>
-                {t(opt.labelKey)}
-              </option>
-            ))}
-          </select>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+          <FilterField label={t('catalog.allCategories')} className="col-span-2 sm:col-span-1">
+            <select
+              value={categoryId}
+              onChange={(e) => updateParam('category_id', e.target.value)}
+              className={filterFieldClass}
+            >
+              <option value="">{t('catalog.allCategories')}</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+          <FilterField label={t('catalog.allLevels')}>
+            <select
+              value={level}
+              onChange={(e) => updateParam('level', e.target.value)}
+              className={filterFieldClass}
+            >
+              <option value="">{t('catalog.allLevels')}</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </FilterField>
+          <FilterField label={t('catalog.minPrice')}>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              value={minPrice}
+              onChange={(e) => updateParam('min_price', e.target.value)}
+              className={filterFieldClass}
+            />
+          </FilterField>
+          <FilterField label={t('catalog.maxPrice')}>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              value={maxPrice}
+              onChange={(e) => updateParam('max_price', e.target.value)}
+              className={filterFieldClass}
+            />
+          </FilterField>
+          <FilterField label={t('catalog.minRating')}>
+            <input
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              inputMode="decimal"
+              value={minRating}
+              onChange={(e) => updateParam('min_rating', e.target.value)}
+              className={filterFieldClass}
+            />
+          </FilterField>
+          <FilterField label={t('catalog.maxDuration')}>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              value={maxDuration}
+              onChange={(e) => updateParam('max_duration', e.target.value)}
+              className={filterFieldClass}
+            />
+          </FilterField>
+          <FilterField label={t('catalog.sortBy')} className="col-span-2 sm:col-span-1 lg:col-span-1">
+            <select
+              value={sort}
+              onChange={(e) => updateParam('sort', e.target.value)}
+              className={filterFieldClass}
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value || 'default'} value={opt.value}>
+                  {t(opt.labelKey)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
         </div>
       </div>
 
@@ -198,20 +233,26 @@ export function CatalogPage() {
         <LoadingSpinner />
       ) : isError ? (
         <div className="rounded border border-border bg-surface py-16 text-center">
-          <p className="text-lg font-semibold text-dark">{t('common.error')}</p>
-          <button type="button" onClick={() => refetch()} className="mt-4 text-primary hover:underline">
+          <p className="text-muted">{t('common.error')}</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-4 rounded bg-primary px-4 py-2 text-sm font-semibold text-white"
+          >
             {t('common.retry')}
           </button>
         </div>
       ) : courses.length === 0 ? (
         <div className="rounded border border-border bg-surface py-16 text-center">
-          <p className="text-lg font-semibold text-dark">{t('catalog.noResults')}</p>
-          <p className="mt-1 text-muted">{t('catalog.adjustFilters')}</p>
+          <p className="font-medium">{t('catalog.noResults')}</p>
+          <p className="mt-1 text-sm text-muted">{t('catalog.adjustFilters')}</p>
         </div>
       ) : (
         <>
-          {isFetching && <p className="mb-3 text-sm text-muted">{t('catalog.updating')}</p>}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {isFetching && !isLoading && (
+            <p className="mb-4 text-sm text-muted">{t('catalog.updating')}</p>
+          )}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {courses.map((course) => (
               <CourseCard key={course.id} course={course} />
             ))}

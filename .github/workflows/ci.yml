@@ -37,6 +37,8 @@ jobs:
         run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/auth.spec.ts e2e/google-oauth.spec.ts e2e/oauth-callback.spec.ts e2e/forgot-password.spec.ts e2e/legal-pages.spec.ts --reporter=line
       - name: Reviews API (prod)
         run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id E2E_FREE_COURSE_SLUG=belajar-web-pzn-gratis npx playwright test e2e/reviews.spec.ts e2e/reviews-ui.spec.ts e2e/admin-reviews-api.spec.ts --reporter=line
+      - name: Profil instruktur (prod)
+        run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id E2E_FREE_COURSE_SLUG=belajar-web-pzn-gratis E2E_INSTRUCTOR_SLUG=muhammad-mahathir-s-kom npx playwright test e2e/instructor-public.spec.ts --reporter=line
       - name: Sertifikat PDF vs web (prod)
         run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/certificate-download.spec.ts e2e/certificate-share.spec.ts --reporter=line
       - name: billing smoke (retry network)

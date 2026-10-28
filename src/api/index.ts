@@ -9,6 +9,7 @@ import { catalogApi } from '@/api/modules/catalog'
 import { commerceApi } from '@/api/modules/commerce'
 import { communityApi } from '@/api/modules/community'
 import { instructorApi } from '@/api/modules/instructor'
+import { instructorPublicApi } from '@/api/modules/instructor-public'
 import { learningApi } from '@/api/modules/learning'
 import { platformApi } from '@/api/modules/platform'
 
@@ -16,6 +17,7 @@ export const api = {
   ...authApi,
   ...catalogApi,
   ...instructorApi,
+  ...instructorPublicApi,
   ...learningApi,
   ...commerceApi,
   ...communityApi,

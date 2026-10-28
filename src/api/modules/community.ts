@@ -7,6 +7,10 @@ import type {
 } from '@/api/types'
 
 export const communityApi = {
+  countCourseQuestions(courseId: number) {
+    return request<{ count: number }>(`/courses/${courseId}/questions/count`)
+  },
+
   listCourseQuestions(courseId: number, lectureId?: number, token?: string | null) {
     const search = new URLSearchParams()
     if (lectureId) search.set('lecture_id', String(lectureId))

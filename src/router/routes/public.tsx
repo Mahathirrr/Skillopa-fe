@@ -34,10 +34,14 @@ const TermsOfServicePage = lazyPage(() =>
 const PrivacyPolicyPage = lazyPage(() =>
   import('@/pages/legal/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })),
 )
+const InstructorPublicPage = lazyPage(() =>
+  import('@/pages/InstructorPublicPage').then((m) => ({ default: m.InstructorPublicPage })),
+)
 
 export const publicRoutes: RouteObject[] = [
   { index: true, element: <HomePage /> },
   { path: 'courses', element: <CatalogPage /> },
+  { path: 'instructor/:slug', element: <InstructorPublicPage /> },
   { path: 'courses/:slug', element: <CourseDetailPage /> },
   { path: 'bundles', element: <BundlesPage /> },
   { path: 'certificates/view/:code', element: <CertificateViewPage /> },

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { BarChart3, BookOpen, DollarSign, Megaphone, Plus, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api } from '@/lib/api'
@@ -8,6 +9,7 @@ import { formatPrice } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
 export function InstructorDashboardPage() {
+  const { t } = useTranslation()
   const { token, user } = useAuthStore()
 
   const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
@@ -19,6 +21,12 @@ export function InstructorDashboardPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['instructor-courses'],
     queryFn: () => api.listInstructorCourses(token!),
+    enabled: !!token,
+  })
+
+  const { data: completenessData } = useQuery({
+    queryKey: ['instructor-profile-completeness'],
+    queryFn: () => api.getInstructorProfileCompleteness(token!),
     enabled: !!token,
   })
 
@@ -45,6 +53,20 @@ export function InstructorDashboardPage() {
           Create course
         </Link>
       </div>
+
+      {completenessData && completenessData.percent < 100 && (
+        <div className="mb-6 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-semibold">
+            {t('instructor.profileCompleteness')}: {completenessData.percent}%
+          </p>
+          <p className="mt-1">
+            <Link to="/profile" className="font-semibold text-primary hover:underline">
+              {t('instructor.viewFullProfile')}
+            </Link>
+            {completenessData.missing.length > 0 && ` — ${completenessData.missing.join(', ')}`}
+          </p>
+        </div>
+      )}
 
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <div className="rounded border border-border bg-surface p-5">

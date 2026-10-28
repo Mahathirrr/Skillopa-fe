@@ -162,6 +162,25 @@
     "demoCheckout": "Platform demo checkout",
     "demoCheckoutDesc": "Confirm to complete payment and activate course access."
   },
+  "instructor": {
+    "cardTitle": "Instructor",
+    "viewFullProfile": "View full profile",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "noRating": "No ratings yet",
+    "statCourses": "{{count}} courses",
+    "statStudents": "{{count}} students",
+    "statReviews": "{{count}} reviews",
+    "statRating": "{{rating}} rating",
+    "avatarAlt": "Profile photo of {{name}}",
+    "notFound": "Instructor profile not found",
+    "metaDescription": "Courses by {{name}} — {{count}} published on Skillopa",
+    "publishedCourses": "Published courses",
+    "noCourses": "No published courses yet.",
+    "loadMore": "Load more",
+    "profileCompleteness": "Profile completeness",
+    "socialLinks": "Social links"
+  },
   "bundles": {
     "title": "Course bundles",
     "subtitle": "Save more with curated course packages",

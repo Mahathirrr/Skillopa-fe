@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, Clock, Gift, Globe, Play, ShoppingCart, User } from 'lucide-react'
+import { CheckCircle, Clock, Gift, Globe, Play, ShoppingCart } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { PreviewLecturePlayer } from '@/components/PreviewLecturePlayer'
 import { CourseReviewsSection } from '@/components/CourseReviewsSection'
+import { InstructorCard } from '@/components/InstructorCard'
 import { QuestionThread } from '@/components/QuestionThread'
 import { StarRating } from '@/components/StarRating'
 import { api, mediaUrl, type Lecture } from '@/lib/api'
@@ -41,10 +42,16 @@ export function CourseDetailPage() {
     enabled: !!course?.instructor_id,
   })
 
-  const { data: questionsData, isLoading: questionsLoading } = useQuery({
+  const { data: questionCountData } = useQuery({
+    queryKey: ['questions-count', course?.id],
+    queryFn: () => api.countCourseQuestions(course!.id),
+    enabled: !!course?.id,
+  })
+
+  const { data: questionsData } = useQuery({
     queryKey: ['questions', course?.id],
     queryFn: () => api.listCourseQuestions(course!.id, undefined, token),
-    enabled: !!course?.id && isAuthenticated && !!token,
+    enabled: !!course?.id && isAuthenticated && !!token && activeTab === 'qa',
   })
 
   const { data: enrollmentsData } = useQuery({
@@ -56,12 +63,14 @@ export function CourseDetailPage() {
   const { data: translationsData } = useQuery({
     queryKey: ['translations', course?.id],
     queryFn: () => api.listCourseTranslations(course!.id),
-    enabled: !!course?.id && activeTab === 'translations',
+    enabled: !!course?.id,
   })
 
   const instructor = instructorData?.instructor
   const questions = questionsData?.questions ?? []
   const translations = translationsData?.translations ?? []
+  const questionCount = questionCountData?.count ?? 0
+  const hasTranslations = translations.length > 0
   const enrollment = enrollmentsData?.enrollments?.find((e) => e.course_id === course?.id)
   const isEnrolled = !!enrollment
   const enrollmentProgress = enrollment?.progress_percent ?? 0
@@ -260,30 +269,7 @@ export function CourseDetailPage() {
 
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[1fr_380px] lg:px-6">
         <div className="space-y-10">
-          {instructor && (
-            <section className="rounded border border-border bg-surface p-6">
-              <h2 className="mb-4 text-xl font-bold">Instructor</h2>
-              <div className="flex gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-bg">
-                  {instructor.avatar_url ? (
-                    <img src={mediaUrl(instructor.avatar_url)} alt={instructor.name} className="h-16 w-16 rounded-full object-cover" />
-                  ) : (
-                    <User className="h-8 w-8 text-muted" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-bold">{instructor.name}</p>
-                  {instructor.headline && <p className="text-sm text-muted">{instructor.headline}</p>}
-                  <div className="mt-2 flex gap-4 text-sm text-muted">
-                    <span>{instructor.total_courses ?? 0} courses</span>
-                    <span>{(instructor.total_students ?? 0).toLocaleString()} students</span>
-                    <span>{(instructor.average_rating ?? 0).toFixed(1)} rating</span>
-                  </div>
-                  {instructor.bio && <p className="mt-2 text-sm text-muted">{instructor.bio}</p>}
-                </div>
-              </div>
-            </section>
-          )}
+          {instructor && <InstructorCard instructor={instructor} />}
 
           <div className="flex gap-4 border-b border-border">
             <button
@@ -298,17 +284,17 @@ export function CourseDetailPage() {
               onClick={() => setActiveTab('qa')}
               className={`pb-3 text-sm font-bold ${activeTab === 'qa' ? 'border-b-2 border-primary text-primary' : 'text-muted'}`}
             >
-              {questionsLoading
-                ? `${t('course.qa')} (…)`
-                : t('course.qaCount', { count: questions.length })}
+              {t('course.qaCount', { count: questionCount })}
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('translations')}
-              className={`pb-3 text-sm font-bold ${activeTab === 'translations' ? 'border-b-2 border-primary text-primary' : 'text-muted'}`}
-            >
-              {t('course.translations')}
-            </button>
+            {hasTranslations && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('translations')}
+                className={`pb-3 text-sm font-bold ${activeTab === 'translations' ? 'border-b-2 border-primary text-primary' : 'text-muted'}`}
+              >
+                {t('course.translations')}
+              </button>
+            )}
           </div>
 
           {activeTab === 'overview' ? (

@@ -18,13 +18,18 @@ export type User = {
 export type InstructorProfile = {
   id: number
   name: string
+  slug?: string
   avatar_url?: string
   headline?: string
   bio?: string
+  website_url?: string
+  linkedin_url?: string
+  youtube_url?: string
+  github_url?: string
   total_courses: number
   published_courses?: number
   total_students: number
-  average_rating: number
+  average_rating?: number
   total_reviews: number
   courses?: Course[]
 }

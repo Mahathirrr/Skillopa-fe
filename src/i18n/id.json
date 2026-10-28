@@ -162,6 +162,25 @@
     "demoCheckout": "Checkout demo platform",
     "demoCheckoutDesc": "Konfirmasi untuk menyelesaikan pembayaran dan mengaktifkan akses kursus."
   },
+  "instructor": {
+    "cardTitle": "Instruktur",
+    "viewFullProfile": "Lihat profil lengkap",
+    "showMore": "Lihat selengkapnya",
+    "showLess": "Sembunyikan",
+    "noRating": "Belum ada rating",
+    "statCourses": "{{count}} kursus",
+    "statStudents": "{{count}} siswa",
+    "statReviews": "{{count}} ulasan",
+    "statRating": "{{rating}} rating",
+    "avatarAlt": "Foto profil {{name}}",
+    "notFound": "Profil instruktur tidak ditemukan",
+    "metaDescription": "Kursus oleh {{name}} — {{count}} kursus terbit di Skillopa",
+    "publishedCourses": "Kursus terbit",
+    "noCourses": "Belum ada kursus terbit.",
+    "loadMore": "Muat lebih banyak",
+    "profileCompleteness": "Kelengkapan profil",
+    "socialLinks": "Tautan sosial"
+  },
   "bundles": {
     "title": "Paket kursus",
     "subtitle": "Hemat lebih banyak dengan paket kursus pilihan",

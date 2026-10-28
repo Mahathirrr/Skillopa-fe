@@ -18,11 +18,11 @@ export function useLandingSmoothScroll({ enabled = true }: Options = {}) {
     if (reducedMotion) return
 
     const lenis = new Lenis({
-      lerp: 0.085,
-      duration: 1.1,
+      lerp: 0.11,
+      duration: 0.95,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 1,
+      wheelMultiplier: 0.92,
       autoRaf: true,
       respectReducedMotion: true,
     })

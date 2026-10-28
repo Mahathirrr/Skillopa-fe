@@ -4,6 +4,8 @@ React single-page application for Skillopa, an Udemy-style online learning platf
 
 Live: https://skillopa.showcaseproject.my.id
 
+See [docs/DECISIONS.md](docs/DECISIONS.md) for key frontend choices.
+
 ## Stack
 
 - React 18, TypeScript, Vite
@@ -34,8 +36,10 @@ Leave empty in production builds for same-origin `/api` via nginx.
 ## Local development
 
 ```bash
+cp .env.example .env
 npm install
 npm run dev
+npm run lint
 ```
 
 Dev server: http://localhost:5173

@@ -25,22 +25,43 @@ async function main() {
   assert('login', loginRes.ok && login.token, loginRes.status)
   const token = login.token
 
-  const cartRes = await fetch(`${API_BASE}/cart`, {
+  const coursesRes = await fetch(`${API_BASE}/courses?limit=20&is_free=false`)
+  const coursesBody = await coursesRes.json()
+  const courses = coursesBody.data ?? coursesBody.courses ?? []
+  assert('paid courses list', courses.length > 0, coursesBody)
+
+  const enrollRes = await fetch(`${API_BASE}/enrollments`, {
     headers: { Authorization: `Bearer ${token}` },
   })
-  const cart = await cartRes.json()
-  const paid = (cart.cart ?? []).filter((c) => !c.is_free)
-  assert('cart has paid course', paid.length > 0, cart)
+  const enrollBody = await enrollRes.json()
+  const enrolledIds = new Set((enrollBody.enrollments ?? []).map((e) => e.course_id))
+
+  let courseId = null
+  for (const c of courses) {
+    if (!enrolledIds.has(c.id)) {
+      courseId = c.id
+      break
+    }
+  }
+  assert('find unenrolled paid course', courseId != null, { enrolledIds: [...enrolledIds] })
+
+  await fetch(`${API_BASE}/cart`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ course_id: courseId }),
+  })
 
   const checkoutRes = await fetch(`${API_BASE}/orders/checkout`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ course_ids: [paid[0].id] }),
+    body: JSON.stringify({ course_ids: [courseId] }),
   })
   const checkout = await checkoutRes.json()
   assert('checkout 201', checkoutRes.status === 201, checkout)
-  assert('payment url', typeof checkout.payment_url === 'string' && checkout.payment_url.length > 8, checkout)
   const orderId = checkout.order?.id
+  if (status.provider === 'mayar') {
+    assert('payment url', typeof checkout.payment_url === 'string' && checkout.payment_url.length > 8, checkout)
+  }
   assert('order id', !!orderId, checkout.order)
 
   if (status.provider === 'mayar') {

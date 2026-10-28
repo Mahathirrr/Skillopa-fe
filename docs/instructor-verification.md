@@ -6,7 +6,8 @@
 | API profil by slug (prod) | PASS | `curl …/api/instructors/slug/muhammad-mahathir-s-kom` → 200 + kursus terbit |
 | Statistik dari agregat DB | PASS | `GET /api/instructors/2` → students/reviews/rating selaras |
 | Grep dummy di `src/` (FE) | PASS | tidak ada stat instruktur hardcode |
-| E2E kursus → profil | PASS | `npx playwright test e2e/instructor-public.spec.ts` |
+| E2E kursus → profil (prod) | PASS | `PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/instructor-public.spec.ts` |
+| Deploy prod (manual VPS) | PASS | rsync BE/FE + `reconcile-instructors` → 4 instructors |
 | Form edit sosial guru | PASS | `ProfilePage` → `PUT /instructor/public-profile` |
 | Scroll landing (Lenis) | PASS | `lerp 0.125`, `duration 1.05`, `wheelMultiplier 0.98` |
 

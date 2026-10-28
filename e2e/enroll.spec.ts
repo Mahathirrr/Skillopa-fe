@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { loginOnPage, registerFreshStudent, setAuthToken } from './helpers'
+import { registerFreshStudent, setAuthToken } from './helpers'
 
 const FREE_COURSE_SLUG =
   process.env.E2E_FREE_COURSE_SLUG ?? 'introduction-to-programming'
@@ -20,7 +20,7 @@ test.describe('Enrollment', () => {
 
   test('student adds paid course to cart and sees demo checkout', async ({ page, request }) => {
     const student = await registerFreshStudent(request)
-    await loginOnPage(page, student.email, student.password)
+    await setAuthToken(page, student.token)
 
     const paidSlug =
       process.env.E2E_PAID_COURSE_SLUG ?? 'go-web-development-with-fiber'

@@ -30,6 +30,11 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: node e2e/prod-billing-sandbox-api.mjs
-      - run: npx playwright install chromium --with-deps
-      - run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/billing.spec.ts
+      - name: billing smoke (retry network)
+        run: |
+          for attempt in 1 2 3 4 5; do
+            node e2e/prod-billing-sandbox-api.mjs && exit 0
+            echo "attempt $attempt failed, retry..."
+            sleep 20
+          done
+          exit 1

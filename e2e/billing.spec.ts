@@ -21,19 +21,10 @@ test.describe('Paid checkout', () => {
     const coursesRes = await request.get(`${base}/courses?limit=20`)
     expect(coursesRes.ok()).toBeTruthy()
     const coursesBody = (await coursesRes.json()) as {
-      courses: { id: number; is_free: boolean; slug: string }[]
+      courses: { id: number; is_free: boolean; price: number; slug: string }[]
     }
-    const paid = coursesBody.courses.find((c) => !c.is_free)
+    const paid = coursesBody.courses.find((c) => !c.is_free && c.price > 0)
     expect(paid).toBeTruthy()
-
-    const enrollRes = await request.get(`${base}/enrollments`, {
-      headers: { Authorization: `Bearer ${student.token}` },
-    })
-    const enrollBody = (await enrollRes.json()) as { enrollments: { course_id: number }[] }
-    const enrolled = new Set(enrollBody.enrollments?.map((e) => e.course_id) ?? [])
-    if (enrolled.has(paid!.id)) {
-      test.skip(true, 'student already enrolled in paid course')
-    }
 
     await request.post(`${base}/cart`, {
       headers: { Authorization: `Bearer ${student.token}` },

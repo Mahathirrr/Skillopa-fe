@@ -607,9 +607,16 @@ export type AffiliateStats = {
 export type PublicStats = {
   total_courses: number
   total_enrollments: number
+  active_learners?: number
   total_instructors: number
   average_rating: number
+  review_count?: number
   featured_reviews: { user_name: string; comment: string; rating: number; course_title?: string }[]
+  show_courses?: boolean
+  show_active_learners?: boolean
+  show_instructors?: boolean
+  show_rating?: boolean
+  show_testimonials?: boolean
 }
 
 export type AffiliateCommission = {

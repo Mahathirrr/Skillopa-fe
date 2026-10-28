@@ -20,9 +20,9 @@
     "language": "Language"
   },
   "home": {
-    "heroBadge": "New courses added weekly",
+    "heroBadge": "Curated free video courses",
     "heroTitle": "Learn skills that move your career forward",
-    "heroSubtitle": "Join thousands of learners mastering in-demand skills with expert instructors and hands-on projects.",
+    "heroSubtitle": "Learn digital skills through curated courses with clear YouTube attribution. No fake reviews or inflated stats.",
     "heroImageAlt": "Students learning online",
     "exploreCourses": "Explore courses",
     "startFree": "Start for free",
@@ -62,7 +62,7 @@
     "bundlesSubtitle": "Get multiple courses at a discounted price with our curated bundles.",
     "viewBundles": "View bundles",
     "testimonialsTitle": "What learners say",
-    "testimonialsSubtitle": "Join thousands of satisfied students",
+    "testimonialsSubtitle": "Real learner reviews (shown when marked featured by admin)",
     "noTestimonials": "Student reviews will appear here as courses get rated.",
     "instructorTitle": "Become an instructor",
     "instructorSubtitle": "Share your expertise with learners worldwide. Create courses, build your audience, and earn on your schedule.",
@@ -129,6 +129,7 @@
     "reviewsSortNewest": "Newest",
     "reviewsSortHelpful": "Most helpful",
     "verifiedBuyer": "Verified buyer",
+    "enrolledParticipant": "Enrolled participant",
     "reviewEdited": "edited",
     "instructorReply": "Instructor",
     "helpfulVotes": "helpful",

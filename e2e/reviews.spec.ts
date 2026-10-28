@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test'
 
-import { apiBaseURL, registerFreshStudent } from './helpers'
+import { apiBaseURL, isProdReadOnly, registerFreshStudent } from './helpers'
+
+test.beforeEach(({ }, testInfo) => {
+  if (isProdReadOnly()) {
+    testInfo.skip(true, 'Prod smoke is read-only; run reviews write tests locally with preview server')
+  }
+})
 
 const FREE_SLUG = process.env.E2E_FREE_COURSE_SLUG ?? 'belajar-web-pzn-gratis'
 

@@ -401,6 +401,7 @@ export function CourseDetailPage() {
                   canReview={canReview}
                   currentUserId={user?.id}
                   enrollmentProgress={enrollmentProgress}
+                  courseIsFree={course.is_free}
                 />
               )}
             </>

@@ -1,5 +1,10 @@
 import type { APIRequestContext, Page } from '@playwright/test'
 
+export function isProdReadOnly(): boolean {
+  const base = process.env.PLAYWRIGHT_BASE_URL ?? ''
+  return base.includes('showcaseproject.my.id') && process.env.E2E_ALLOW_WRITES !== '1'
+}
+
 export function apiBaseURL(): string {
   const root = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173'
   return process.env.PLAYWRIGHT_API_URL ?? `${root.replace(/\/$/, '')}/api`

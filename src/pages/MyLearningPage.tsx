@@ -1,16 +1,29 @@
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { api, mediaUrl } from '@/lib/api'
-import { learnUrl } from '@/lib/utils'
+import { api, mediaUrl, type Enrollment } from '@/lib/api'
+import { formatPrice, learnUrl } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
-export function MyLearningPage() {
-  const { token } = useAuthStore()
+type Filter = 'all' | 'free' | 'paid'
 
-  const { data, isLoading } = useQuery({
+function enrollmentAccess(enrollment: Enrollment): 'free' | 'paid' | 'unknown' {
+  if (enrollment.course) {
+    return enrollment.course.is_free ? 'free' : 'paid'
+  }
+  return 'unknown'
+}
+
+export function MyLearningPage() {
+  const { t } = useTranslation()
+  const { token } = useAuthStore()
+  const [filter, setFilter] = useState<Filter>('all')
+
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['enrollments'],
     queryFn: () => api.listEnrollments(token!),
     enabled: !!token,
@@ -18,60 +31,118 @@ export function MyLearningPage() {
 
   const enrollments = data?.enrollments ?? []
 
+  const filtered = useMemo(() => {
+    if (filter === 'all') return enrollments
+    return enrollments.filter((e) => enrollmentAccess(e) === filter)
+  }, [enrollments, filter])
+
   if (isLoading) return <LoadingSpinner />
+
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+        <p className="text-muted">{t('common.error')}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
-      <h1 className="mb-2 text-3xl font-bold">My learning</h1>
-      <p className="mb-8 text-muted">Pick up where you left off</p>
+      <h1 className="mb-2 text-3xl font-bold">{t('myLearning.title')}</h1>
+      <p className="mb-6 text-muted">{t('myLearning.subtitle')}</p>
+
+      {enrollments.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <p className="text-sm text-muted">{t('myLearning.count', { count: enrollments.length })}</p>
+          <div className="flex gap-2" role="tablist" aria-label={t('myLearning.title')}>
+            {(['all', 'free', 'paid'] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={filter === key}
+                onClick={() => setFilter(key)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  filter === key
+                    ? 'bg-primary text-white'
+                    : 'bg-bg text-muted ring-1 ring-border hover:text-dark'
+                }`}
+              >
+                {t(`myLearning.filter${key === 'all' ? 'All' : key === 'free' ? 'Free' : 'Paid'}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {enrollments.length === 0 ? (
         <div className="rounded border border-border bg-surface py-16 text-center">
-          <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted" />
-          <p className="text-lg font-semibold">No enrolled courses yet</p>
-          <Link to="/courses" className="mt-4 inline-block text-primary hover:underline">
-            Start learning
+          <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted" aria-hidden />
+          <p className="text-lg font-semibold">{t('myLearning.emptyTitle')}</p>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted">{t('myLearning.emptyHint')}</p>
+          <Link to="/courses" className="mt-4 inline-block font-semibold text-primary hover:underline">
+            {t('myLearning.browse')}
           </Link>
         </div>
+      ) : filtered.length === 0 ? (
+        <p className="text-muted">{t('myLearning.emptyTitle')}</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {enrollments.map((enrollment) => {
+          {filtered.map((enrollment) => {
             const course = enrollment.course
-            if (!course) return null
+            const access = enrollmentAccess(enrollment)
+            const title = course?.title ?? t('myLearning.courseFallback', { id: enrollment.course_id })
+            const href = course?.slug ? learnUrl(course.slug) : '/courses'
+
             return (
               <Link
                 key={enrollment.id}
-                to={learnUrl(course.slug)}
-                className="group overflow-hidden rounded border border-border bg-surface shadow-sm transition hover:shadow-md"
+                to={href}
+                className="group overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition hover:shadow-md"
               >
-                {course.cover_image ? (
+                {course?.cover_image ? (
                   <img
                     src={mediaUrl(course.cover_image)}
-                    alt={course.title}
-                    className="aspect-video w-full object-cover transition group-hover:scale-105"
+                    alt=""
+                    className="aspect-video w-full object-cover transition group-hover:scale-[1.02]"
                   />
                 ) : (
-                  <div className="flex aspect-video items-center justify-center bg-bg text-sm text-muted">
-                    {course.title}
+                  <div className="flex aspect-video items-center justify-center bg-bg px-4 text-center text-sm text-muted">
+                    {title}
                   </div>
                 )}
                 <div className="p-4">
-                  <h3 className="mb-2 font-bold group-hover:text-primary">{course.title}</h3>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {access === 'free' && (
+                      <span className="rounded bg-accent/20 px-2 py-0.5 text-xs font-bold text-dark">
+                        {t('myLearning.badgeFree')}
+                      </span>
+                    )}
+                    {access === 'paid' && (
+                      <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                        {t('myLearning.badgePaid')}
+                        {course && !course.is_free && (
+                          <span className="ml-1 font-normal text-muted">{formatPrice(course.price, false)}</span>
+                        )}
+                      </span>
+                    )}
+                    {enrollment.completed_at && (
+                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-bold text-green-800">
+                        {t('myLearning.completed')}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mb-2 font-bold group-hover:text-primary">{title}</h3>
                   <div className="mb-1 flex justify-between text-xs text-muted">
-                    <span>Progress</span>
+                    <span>{t('myLearning.progress')}</span>
                     <span>{Math.round(enrollment.progress_percent)}%</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-bg">
                     <div
                       className="h-full bg-primary transition-all"
-                      style={{ width: `${enrollment.progress_percent}%` }}
+                      style={{ width: `${Math.min(100, enrollment.progress_percent)}%` }}
                     />
                   </div>
-                  {enrollment.completed_at && (
-                    <span className="mt-2 inline-block rounded bg-accent px-2 py-0.5 text-xs font-bold text-dark">
-                      Completed
-                    </span>
-                  )}
                 </div>
               </Link>
             )

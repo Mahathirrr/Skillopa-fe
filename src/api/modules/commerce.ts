@@ -104,12 +104,24 @@ export const commerceApi = {
     )
   },
 
-  validateCoupon(token: string, code: string, subtotal: number) {
-    return request<CouponValidation>('/coupons/validate', {
+  async validateCoupon(token: string, code: string, subtotal: number): Promise<CouponValidation> {
+    const res = await request<{
+      valid?: boolean
+      coupon?: CouponValidation['coupon']
+      discount?: number
+      discount_amount?: number
+      message?: string
+    }>('/coupons/validate', {
       method: 'POST',
-      body: { code, subtotal },
+      body: { code: code.trim(), subtotal },
       token,
     })
+    return {
+      valid: res.valid ?? !!res.coupon,
+      coupon: res.coupon,
+      discount_amount: res.discount_amount ?? res.discount ?? 0,
+      message: res.message,
+    }
   },
 
   listRefunds(token: string) {

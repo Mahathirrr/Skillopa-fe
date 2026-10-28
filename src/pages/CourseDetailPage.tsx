@@ -107,6 +107,7 @@ export function CourseDetailPage() {
     mutationFn: () => api.enrollFree(token!, course!.id),
     onSuccess: () => {
       setActionMsg('Enrolled successfully')
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] })
       navigate(learnUrl(course!.slug))
     },
     onError: (e) => setActionMsg(e instanceof ApiError ? e.message : 'Enrollment failed'),

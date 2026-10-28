@@ -1,0 +1,21 @@
+---
+description: Standar UX form Skillopa (selaras Hadirin)
+globs:
+  - src/**/*.tsx
+  - src/**/*.ts
+alwaysApply: false
+---
+
+# Form UX Skillopa
+
+Setiap form (auth, checkout, profil, instruktur, admin) wajib:
+
+1. **Label** jelas + **`placeholder`** contoh realistis (`nama@email.com`, bukan kosong).
+2. **Hint** di bawah field untuk aturan bisnis (min karakter, format, dampak ke sertifikat/billing).
+3. **Validasi client** selaras backend; pesan error spesifik per field + banner ringkas.
+4. **Password**: toggle tampil/sembunyi; daftar pakai checklist (min 6 + rekomendasi huruf/angka); konfirmasi password.
+5. **A11y**: `aria-invalid`, `aria-describedby`, `role="alert"` pada error.
+6. **Loading/disabled** pada submit; hindari submit ganda.
+7. **Komponen reuse**: `AuthTextField`, `PasswordField` — jangan raw `<input>` tanpa hint di halaman publik.
+
+Auth referensi: `LoginPage`, `RegisterPage`, `ForgotPasswordPage`, Hadirin `LoginForm2` / `SignupForm2`.

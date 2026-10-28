@@ -149,6 +149,22 @@
     "dripMessage": "This lecture unlocks on the scheduled date.",
     "selectLecture": "Select a lecture to begin"
   },
+  "myLearning": {
+    "title": "My learning",
+    "subtitle": "Continue courses you enrolled in — free and paid",
+    "emptyTitle": "No enrolled courses yet",
+    "emptyHint": "Browse the catalog and enroll in free courses or purchase paid ones.",
+    "browse": "Browse courses",
+    "progress": "Progress",
+    "completed": "Completed",
+    "filterAll": "All",
+    "filterFree": "Free",
+    "filterPaid": "Paid",
+    "badgeFree": "Free",
+    "badgePaid": "Paid",
+    "courseFallback": "Course #{{id}}",
+    "count": "{{count}} courses"
+  },
   "subscriptions": {
     "title": "Subscription plans",
     "subtitle": "Unlimited access to premium courses",

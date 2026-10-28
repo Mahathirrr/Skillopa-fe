@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ExternalLink, Package, Tag } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -13,7 +13,14 @@ import { useAuthStore } from '@/stores/auth'
 export function CheckoutPage() {
   const { t } = useTranslation()
   const { token } = useAuthStore()
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
+
+  function afterEnrollmentSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['enrollments'] })
+    queryClient.invalidateQueries({ queryKey: ['cart'] })
+    navigate('/my-learning')
+  }
   const [error, setError] = useState('')
   const [couponCode, setCouponCode] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
@@ -91,7 +98,7 @@ export function CheckoutPage() {
     },
     onSuccess: () => {
       if (paidCourses.length === 0) {
-        navigate('/my-learning')
+        afterEnrollmentSuccess()
       }
     },
     onError: (e) => {
@@ -112,7 +119,7 @@ export function CheckoutPage() {
         await enrollFreeCourses()
       }
     },
-    onSuccess: () => navigate('/my-learning'),
+    onSuccess: () => afterEnrollmentSuccess(),
     onError: (e) => {
       setError(e instanceof ApiError ? e.message : t('common.error'))
     },
@@ -124,13 +131,13 @@ export function CheckoutPage() {
       await api.syncOrder(token!, pendingOrderId)
       if (freeCourses.length > 0) await enrollFreeCourses()
     },
-    onSuccess: () => navigate('/my-learning'),
+    onSuccess: () => afterEnrollmentSuccess(),
     onError: (e) => setError(e instanceof ApiError ? e.message : t('common.error')),
   })
 
   const bundleCheckoutMutation = useMutation({
     mutationFn: () => api.checkoutBundle(token!, Number(selectedBundleId)),
-    onSuccess: () => navigate('/my-learning'),
+    onSuccess: () => afterEnrollmentSuccess(),
     onError: (e) => setError(e instanceof ApiError ? e.message : t('common.error')),
   })
 

@@ -149,6 +149,22 @@
     "dripMessage": "Materi ini akan terbuka pada tanggal yang dijadwalkan.",
     "selectLecture": "Pilih materi untuk memulai"
   },
+  "myLearning": {
+    "title": "Belajar Saya",
+    "subtitle": "Lanjutkan kursus yang sudah Anda daftar — gratis maupun berbayar",
+    "emptyTitle": "Belum ada kursus terdaftar",
+    "emptyHint": "Jelajahi katalog dan daftar kursus gratis atau beli kursus berbayar.",
+    "browse": "Jelajahi kursus",
+    "progress": "Progres",
+    "completed": "Selesai",
+    "filterAll": "Semua",
+    "filterFree": "Gratis",
+    "filterPaid": "Berbayar",
+    "badgeFree": "Gratis",
+    "badgePaid": "Berbayar",
+    "courseFallback": "Kursus #{{id}}",
+    "count": "{{count}} kursus"
+  },
   "subscriptions": {
     "title": "Paket langganan",
     "subtitle": "Akses tak terbatas ke kursus premium",

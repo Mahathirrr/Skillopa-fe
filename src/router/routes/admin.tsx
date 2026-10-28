@@ -15,6 +15,9 @@ const AdminAuditPage = lazyPage(() =>
 const AdminReviewReportsPage = lazyPage(() =>
   import('@/pages/admin/AdminReviewReportsPage').then((m) => ({ default: m.AdminReviewReportsPage })),
 )
+const AdminCouponsPage = lazyPage(() =>
+  import('@/pages/admin/AdminCouponsPage').then((m) => ({ default: m.AdminCouponsPage })),
+)
 
 export const adminRoutes: RouteObject = {
   element: <ProtectedRoute admin />,
@@ -23,5 +26,6 @@ export const adminRoutes: RouteObject = {
     { path: 'admin/moderation', element: <ModerationPage /> },
     { path: 'admin/audit', element: <AdminAuditPage /> },
     { path: 'admin/review-reports', element: <AdminReviewReportsPage /> },
+    { path: 'admin/coupons', element: <AdminCouponsPage /> },
   ],
 }

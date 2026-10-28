@@ -276,6 +276,21 @@ export type Coupon = {
   valid_from?: string | null
   valid_until?: string | null
   is_active: boolean
+  instructor_id?: number | null
+  course_id?: number | null
+}
+
+export type CouponInput = {
+  code: string
+  description?: string
+  discount_type: 'percent' | 'fixed'
+  discount_value: number
+  min_purchase?: number
+  max_uses?: number
+  valid_from?: string | null
+  valid_until?: string | null
+  is_active?: boolean
+  course_id?: number | null
 }
 
 export type CouponValidation = {

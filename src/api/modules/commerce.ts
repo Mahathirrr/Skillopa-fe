@@ -104,7 +104,12 @@ export const commerceApi = {
     )
   },
 
-  async validateCoupon(token: string, code: string, subtotal: number): Promise<CouponValidation> {
+  async validateCoupon(
+    token: string,
+    code: string,
+    subtotal: number,
+    courseIds?: number[],
+  ): Promise<CouponValidation> {
     const res = await request<{
       valid?: boolean
       coupon?: CouponValidation['coupon']
@@ -113,7 +118,11 @@ export const commerceApi = {
       message?: string
     }>('/coupons/validate', {
       method: 'POST',
-      body: { code: code.trim(), subtotal },
+      body: {
+        code: code.trim(),
+        subtotal,
+        course_ids: courseIds?.length ? courseIds : undefined,
+      },
       token,
     })
     return {

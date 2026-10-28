@@ -2,6 +2,8 @@ import { API_URL, request } from '@/api/client'
 import type {
   AdminStats,
   AuditEvent,
+  Coupon,
+  CouponInput,
   Course,
   Refund,
   ReviewReport,
@@ -84,5 +86,21 @@ export const adminApi = {
 
   adminRestoreReview(token: string, reviewId: number) {
     return request<{ message: string }>(`/admin/reviews/${reviewId}/restore`, { method: 'POST', token })
+  },
+
+  listAdminCoupons(token: string) {
+    return request<{ coupons: Coupon[] }>('/admin/coupons', { token })
+  },
+
+  createAdminCoupon(token: string, body: CouponInput) {
+    return request<{ coupon: Coupon }>('/admin/coupons', { method: 'POST', body, token })
+  },
+
+  updateAdminCoupon(token: string, id: number, body: Partial<CouponInput>) {
+    return request<{ coupon: Coupon }>(`/admin/coupons/${id}`, { method: 'PUT', body, token })
+  },
+
+  deleteAdminCoupon(token: string, id: number) {
+    return request<void>(`/admin/coupons/${id}`, { method: 'DELETE', token })
   },
 }

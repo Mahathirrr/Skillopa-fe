@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { BarChart3, BookOpen, DollarSign, Megaphone, Plus, Users } from 'lucide-react'
+import { BarChart3, BookOpen, DollarSign, Megaphone, Plus, Tag, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -121,6 +121,13 @@ export function InstructorDashboardPage() {
         >
           <BookOpen className="h-4 w-4 text-primary" />
           All courses
+        </Link>
+        <Link
+          to="/instructor/coupons"
+          className="inline-flex items-center gap-2 rounded border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:bg-bg"
+        >
+          <Tag className="h-4 w-4 text-primary" />
+          {t('coupons.instructorTitle')}
         </Link>
       </div>
 

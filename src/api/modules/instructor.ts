@@ -1,5 +1,7 @@
 import { request } from '@/api/client'
 import type {
+  Coupon,
+  CouponInput,
   Course,
   CourseStudent,
   CreateCourseInput,
@@ -156,5 +158,13 @@ export const instructorApi = {
       method: 'DELETE',
       token,
     })
+  },
+
+  listInstructorCoupons(token: string) {
+    return request<{ coupons: Coupon[] }>('/instructor/coupons', { token })
+  },
+
+  createInstructorCoupon(token: string, body: CouponInput) {
+    return request<{ coupon: Coupon }>('/instructor/coupons', { method: 'POST', body, token })
   },
 }

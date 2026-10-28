@@ -27,6 +27,9 @@ const CurriculumBuilderPage = lazyPage(() =>
 const QuizBuilderPage = lazyPage(() =>
   import('@/pages/instructor/QuizBuilderPage').then((m) => ({ default: m.QuizBuilderPage })),
 )
+const InstructorCouponsPage = lazyPage(() =>
+  import('@/pages/instructor/InstructorCouponsPage').then((m) => ({ default: m.InstructorCouponsPage })),
+)
 
 export const instructorRoutes: RouteObject = {
   element: <ProtectedRoute instructor />,
@@ -35,6 +38,7 @@ export const instructorRoutes: RouteObject = {
     { path: 'instructor/analytics', element: <InstructorAnalyticsPage /> },
     { path: 'instructor/students', element: <InstructorStudentsPage /> },
     { path: 'instructor/announcements', element: <AnnouncementsPage /> },
+    { path: 'instructor/coupons', element: <InstructorCouponsPage /> },
     { path: 'instructor/courses', element: <InstructorCoursesPage /> },
     { path: 'instructor/courses/new', element: <CourseFormPage /> },
     { path: 'instructor/courses/:id/edit', element: <CourseFormPage /> },

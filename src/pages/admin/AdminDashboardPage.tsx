@@ -100,6 +100,12 @@ export function AdminDashboardPage() {
           >
             Laporan ulasan
           </Link>
+          <Link
+            to="/admin/coupons"
+            className="inline-flex items-center gap-2 rounded border border-border px-4 py-2 text-sm font-medium hover:bg-muted/30"
+          >
+            Kupon platform
+          </Link>
         </div>
       </div>
 

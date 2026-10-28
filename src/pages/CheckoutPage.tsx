@@ -51,12 +51,13 @@ export function CheckoutPage() {
   const bundles = (bundlesData?.bundles ?? []).filter((b) => b.price <= 0)
   const paidCourses = items.filter((c) => !c.is_free)
   const freeCourses = items.filter((c) => c.is_free)
+  const paidCourseIds = paidCourses.map((c) => c.id)
   const subtotal = paidCourses.reduce((sum, c) => sum + c.price, 0)
   const discount = appliedCoupon?.discount ?? 0
   const total = Math.max(0, subtotal - discount)
 
   const validateCouponMutation = useMutation({
-    mutationFn: () => api.validateCoupon(token!, couponCode.trim(), subtotal),
+    mutationFn: () => api.validateCoupon(token!, couponCode.trim(), subtotal, paidCourseIds),
     onSuccess: (res) => {
       if (res.valid && res.coupon) {
         setAppliedCoupon({ code: res.coupon.code, discount: res.discount_amount })
@@ -80,24 +81,25 @@ export function CheckoutPage() {
   }
 
   const checkoutMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<'instant' | 'pending' | 'free-only'> => {
       if (paidCourses.length > 0) {
-        const res = await api.createOrderCheckout(
-          token!,
-          paidCourses.map((c) => c.id),
-          appliedCoupon?.code,
-        )
+        const res = await api.createOrderCheckout(token!, paidCourseIds, appliedCoupon?.code)
+        if (res.order.status === 'paid' || res.order.total <= 0) {
+          if (freeCourses.length > 0) await enrollFreeCourses()
+          return 'instant'
+        }
         setPendingOrderId(res.order.id)
         if (res.payment_url) {
           setPaymentURL(res.payment_url)
           window.open(res.payment_url, '_blank', 'noopener,noreferrer')
         }
-        return
+        return 'pending'
       }
       await enrollFreeCourses()
+      return 'free-only'
     },
-    onSuccess: () => {
-      if (paidCourses.length === 0) {
+    onSuccess: (mode) => {
+      if (mode === 'instant' || mode === 'free-only') {
         afterEnrollmentSuccess()
       }
     },
@@ -168,7 +170,14 @@ export function CheckoutPage() {
             </div>
           )}
 
-          {paidCourses.length > 0 && demoConfirm && !mayarEnabled && (
+          {paidCourses.length > 0 && total <= 0 && discount > 0 && (
+            <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm">
+              <p className="font-semibold text-green-800 dark:text-green-200">{t('checkout.freeWithCoupon')}</p>
+              <p className="mt-1 text-muted">{t('checkout.freeWithCouponHint')}</p>
+            </div>
+          )}
+
+          {paidCourses.length > 0 && total > 0 && demoConfirm && !mayarEnabled && (
             <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
               <p className="font-semibold text-primary">{t('checkout.demoCheckout')}</p>
               <p className="mt-1 text-muted">{t('checkout.demoCheckoutDesc')}</p>
@@ -309,9 +318,11 @@ export function CheckoutPage() {
               {checkoutMutation.isPending
                 ? t('checkout.processing')
                 : paidCourses.length > 0
-                  ? mayarEnabled
-                    ? t('checkout.placeMayarOrder')
-                    : t('checkout.placeDemoOrder')
+                  ? total <= 0 && discount > 0
+                    ? t('checkout.freeWithCoupon')
+                    : mayarEnabled
+                      ? t('checkout.placeMayarOrder')
+                      : t('checkout.placeDemoOrder')
                   : t('checkout.confirmFreeEnroll')}
             </button>
           )}

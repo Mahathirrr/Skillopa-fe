@@ -179,7 +179,8 @@
     "noCourses": "Belum ada kursus terbit.",
     "loadMore": "Muat lebih banyak",
     "profileCompleteness": "Kelengkapan profil",
-    "socialLinks": "Tautan sosial"
+    "socialLinks": "Tautan sosial",
+    "publicProfileLink": "Profil publik:"
   },
   "bundles": {
     "title": "Paket kursus",

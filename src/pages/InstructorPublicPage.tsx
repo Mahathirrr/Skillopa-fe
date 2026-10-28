@@ -31,6 +31,16 @@ export function InstructorPublicPage() {
   })
 
   useEffect(() => {
+    if (error || (!isLoading && !instructor)) {
+      let robots = document.querySelector('meta[name="robots"]')
+      if (!robots) {
+        robots = document.createElement('meta')
+        robots.setAttribute('name', 'robots')
+        document.head.appendChild(robots)
+      }
+      robots.setAttribute('content', 'noindex, nofollow')
+      return
+    }
     if (!instructor) return
     const pageTitle = `${instructor.name} | Skillopa`
     const desc =
@@ -39,7 +49,7 @@ export function InstructorPublicPage() {
     document.title = pageTitle
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', desc)
-  }, [instructor, t])
+  }, [instructor, t, error, isLoading])
 
   if (isLoading) return <LoadingSpinner />
   if (error || !instructor) {

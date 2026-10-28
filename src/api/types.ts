@@ -10,6 +10,11 @@ export type User = {
   avatar_url?: string
   headline?: string
   bio?: string
+  website_url?: string
+  linkedin_url?: string
+  youtube_url?: string
+  github_url?: string
+  instructor_slug?: string
   locale?: string
   referral_code?: string
   created_at?: string

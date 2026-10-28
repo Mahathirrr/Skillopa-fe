@@ -133,7 +133,10 @@ export function CourseDetailPage() {
   const questionMutation = useMutation({
     mutationFn: ({ title, body }: { title: string; body: string }) =>
       api.createQuestion(token!, course!.id, { title, body }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions', course!.id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions', course!.id] })
+      queryClient.invalidateQueries({ queryKey: ['questions-count', course!.id] })
+    },
   })
 
   if (isLoading) return <LoadingSpinner />
@@ -194,9 +197,14 @@ export function CourseDetailPage() {
                 <span className="text-white/70">{t('course.noReviewsYet')}</span>
               )}
               <span>{course.enrollment_count?.toLocaleString() ?? 0} students</span>
-              {course.instructor_name && (
-                <span>Created by {course.instructor_name}</span>
-              )}
+              {course.instructor_name &&
+                (instructor?.slug ? (
+                  <Link to={`/instructor/${instructor.slug}`} className="text-accent hover:underline">
+                    Created by {course.instructor_name}
+                  </Link>
+                ) : (
+                  <span>Created by {course.instructor_name}</span>
+                ))}
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-white/70">
               <span className="flex items-center gap-1">

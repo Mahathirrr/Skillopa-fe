@@ -1,5 +1,5 @@
 import { request } from '@/api/client'
-import type { Course, InstructorProfile } from '@/api/types'
+import type { Course, InstructorProfile, User } from '@/api/types'
 
 export const instructorPublicApi = {
   getInstructorBySlug(slug: string) {
@@ -26,7 +26,7 @@ export const instructorPublicApi = {
       github_url?: string
     },
   ) {
-    return request<{ user: unknown }>('/instructor/public-profile', { method: 'PUT', body: data, token })
+    return request<{ user: User }>('/instructor/public-profile', { method: 'PUT', body: data, token })
   },
 
   getInstructorProfileCompleteness(token: string) {

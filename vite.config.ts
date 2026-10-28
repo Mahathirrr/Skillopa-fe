@@ -4,8 +4,20 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
+const e2eApiTarget = process.env.E2E_API_PROXY_TARGET ?? 'https://skillopa.showcaseproject.my.id'
+
+const apiProxy = {
+  '/api': {
+    target: e2eApiTarget,
+    changeOrigin: true,
+    secure: true,
+  },
+}
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: { proxy: apiProxy },
+  preview: { proxy: apiProxy },
   build: {
     rollupOptions: {
       output: {

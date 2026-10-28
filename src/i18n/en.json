@@ -179,7 +179,8 @@
     "noCourses": "No published courses yet.",
     "loadMore": "Load more",
     "profileCompleteness": "Profile completeness",
-    "socialLinks": "Social links"
+    "socialLinks": "Social links",
+    "publicProfileLink": "Public profile:"
   },
   "bundles": {
     "title": "Course bundles",

@@ -80,13 +80,21 @@ export function AdminDashboardPage() {
           <h1 className="mb-2 text-3xl font-bold">Admin panel</h1>
           <p className="text-muted">Platform overview and management</p>
         </div>
-        <Link
-          to="/admin/moderation"
-          className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-dark"
-        >
-          <Shield className="h-4 w-4" />
-          Course moderation
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/admin/moderation"
+            className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-dark"
+          >
+            <Shield className="h-4 w-4" />
+            Course moderation
+          </Link>
+          <Link
+            to="/admin/audit"
+            className="inline-flex items-center gap-2 rounded border border-border px-4 py-2 text-sm font-medium hover:bg-muted/30"
+          >
+            Audit & export
+          </Link>
+        </div>
       </div>
 
       {msg && <p className="mb-4 text-sm text-primary">{msg}</p>}

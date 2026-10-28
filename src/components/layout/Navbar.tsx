@@ -18,12 +18,16 @@ import { useTranslation } from 'react-i18next'
 
 import { NavbarSearch } from '@/components/layout/NavbarSearch'
 import { SkillopaLogo } from '@/components/SkillopaLogo'
+import { buttonClass } from '@/components/ui/button'
 import { api } from '@/lib/api'
 import { setAppLocale } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
 type NavbarProps = { className?: string }
+
+const navLinkClass =
+  'rounded-lg px-3 py-2 text-sm font-medium text-foreground-muted transition-colors hover:bg-background hover:text-foreground'
 
 export function Navbar({ className }: NavbarProps) {
   const { isAuthenticated, isInstructor, isAdmin, user, token, logout } = useAuthStore()
@@ -61,56 +65,58 @@ export function Navbar({ className }: NavbarProps) {
 
   const navLinks = (
     <>
-      <Link to="/courses" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+      <Link to="/courses" className={navLinkClass}>
         {t('nav.explore')}
       </Link>
-      <Link to="/bundles" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+      <Link to="/bundles" className={navLinkClass}>
         {t('nav.bundles')}
       </Link>
       {isAuthenticated && (
         <>
-          <Link
-            to="/my-learning"
-            className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
-          >
-            <BookOpen className="h-4 w-4" />
+          <Link to="/my-learning" className={cn(navLinkClass, 'inline-flex items-center gap-1.5')}>
+            <BookOpen className="h-4 w-4" aria-hidden />
             {t('nav.myLearning')}
           </Link>
-          <Link to="/subscriptions" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+          <Link to="/subscriptions" className={navLinkClass}>
             {t('nav.subscriptions')}
           </Link>
-          <Link to="/affiliate" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+          <Link to="/affiliate" className={navLinkClass}>
             {t('nav.affiliate')}
           </Link>
-          <Link to="/wishlist" className="rounded p-2 hover:bg-dark-muted" aria-label={t('nav.wishlist')}>
+          <Link
+            to="/wishlist"
+            className="rounded-lg p-2 text-foreground-muted hover:bg-background hover:text-primary"
+            aria-label={t('nav.wishlist')}
+          >
             <Heart className="h-5 w-5" />
           </Link>
-          <Link to="/cart" className="rounded p-2 hover:bg-dark-muted" aria-label={t('nav.cart')}>
+          <Link
+            to="/cart"
+            className="rounded-lg p-2 text-foreground-muted hover:bg-background hover:text-primary"
+            aria-label={t('nav.cart')}
+          >
             <ShoppingCart className="h-5 w-5" />
           </Link>
           <Link
             to="/notifications"
-            className="relative rounded p-2 hover:bg-dark-muted"
+            className="relative rounded-lg p-2 text-foreground-muted hover:bg-background hover:text-primary"
             aria-label={t('nav.notifications')}
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold">
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-error px-1 text-[10px] font-bold text-white">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </Link>
           {isInstructor && (
-            <Link
-              to="/instructor/dashboard"
-              className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted"
-            >
-              <LayoutDashboard className="h-4 w-4" />
+            <Link to="/instructor/dashboard" className={cn(navLinkClass, 'inline-flex items-center gap-1.5')}>
+              <LayoutDashboard className="h-4 w-4" aria-hidden />
               {t('nav.instructor')}
             </Link>
           )}
           {isAdmin && (
-            <Link to="/admin" className="rounded px-3 py-2 text-sm font-medium hover:bg-dark-muted">
+            <Link to="/admin" className={navLinkClass}>
               {t('nav.admin')}
             </Link>
           )}
@@ -120,18 +126,24 @@ export function Navbar({ className }: NavbarProps) {
   )
 
   return (
-    <header className={cn('sticky top-0 z-50 border-b border-dark-muted bg-dark text-white', className)}>
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 lg:px-6">
-        <Link to="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
-          <SkillopaLogo className="h-7 w-7" />
+    <header
+      className={cn(
+        'sticky top-0 z-50 border-b border-border bg-surface/95 text-foreground backdrop-blur-md supports-[backdrop-filter]:bg-surface/90',
+        className,
+      )}
+    >
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 lg:gap-4 lg:px-6">
+        <Link to="/" className="flex shrink-0 items-center gap-2.5 font-bold tracking-tight text-foreground">
+          <SkillopaLogo className="h-8 w-8" />
           <span className="hidden text-lg sm:inline">Skillopa</span>
         </Link>
 
         <button
           type="button"
-          className="rounded p-1 lg:hidden"
+          className="rounded-lg p-2 text-foreground-muted hover:bg-background lg:hidden"
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -143,163 +155,124 @@ export function Navbar({ className }: NavbarProps) {
           className="hidden flex-1 lg:flex"
         />
 
-        <nav className="ml-auto hidden items-center gap-1 lg:flex">
+        <nav className="ml-auto hidden items-center gap-0.5 lg:flex">
           {navLinks}
 
           <button
             type="button"
             onClick={toggleLocale}
-            className="inline-flex items-center gap-1 rounded px-2 py-2 text-sm font-medium hover:bg-dark-muted"
+            className={cn(navLinkClass, 'inline-flex items-center gap-1')}
             aria-label={t('nav.language')}
           >
-            <Languages className="h-4 w-4" />
+            <Languages className="h-4 w-4" aria-hidden />
             {locale.toUpperCase()}
           </button>
 
           {isAuthenticated ? (
-            <div className="relative">
+            <div className="relative ml-1">
               <button
                 type="button"
                 onClick={() => setUserMenuOpen((v) => !v)}
-                className="flex items-center gap-2 rounded px-3 py-2 text-sm hover:bg-dark-muted"
+                className={cn(navLinkClass, 'inline-flex max-w-[160px] items-center gap-2')}
                 aria-expanded={userMenuOpen}
+                aria-haspopup="menu"
               >
-                <User className="h-4 w-4" />
-                <span className="max-w-[120px] truncate">{user?.name}</span>
+                <User className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">{user?.name}</span>
               </button>
               {userMenuOpen && (
-              <div className="absolute right-0 top-full z-50 min-w-[180px] rounded border border-border bg-surface py-1 text-dark shadow-lg">
-                <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-bg">
-                  {t('nav.profile')}
-                </Link>
-                <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-bg">
-                  {t('nav.orders')}
-                </Link>
-                <Link to="/certificates" className="block px-4 py-2 text-sm hover:bg-bg">
-                  {t('nav.certificates')}
-                </Link>
-                <Link to="/affiliate" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-bg">
-                  <Share2 className="h-3.5 w-3.5" />
-                  {t('nav.affiliate')}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout()
-                    navigate('/')
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-bg"
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-50 mt-1 min-w-[200px] rounded-xl border border-border bg-surface py-1 shadow-md"
                 >
-                  <LogOut className="h-4 w-4" />
-                  {t('nav.logout')}
-                </button>
-              </div>
+                  <Link role="menuitem" to="/profile" className="block px-4 py-2.5 text-sm hover:bg-background" onClick={() => setUserMenuOpen(false)}>
+                    {t('nav.profile')}
+                  </Link>
+                  <Link role="menuitem" to="/orders" className="block px-4 py-2.5 text-sm hover:bg-background" onClick={() => setUserMenuOpen(false)}>
+                    {t('nav.orders')}
+                  </Link>
+                  <Link role="menuitem" to="/certificates" className="block px-4 py-2.5 text-sm hover:bg-background" onClick={() => setUserMenuOpen(false)}>
+                    {t('nav.certificates')}
+                  </Link>
+                  <Link role="menuitem" to="/affiliate" className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-background" onClick={() => setUserMenuOpen(false)}>
+                    <Share2 className="h-3.5 w-3.5" aria-hidden />
+                    {t('nav.affiliate')}
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      logout()
+                      setUserMenuOpen(false)
+                      navigate('/')
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-background"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden />
+                    {t('nav.logout')}
+                  </button>
+                </div>
               )}
             </div>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="rounded border border-white px-4 py-2 text-sm font-bold text-white hover:bg-white hover:!text-[#1c1d1f]"
-              >
+            <div className="ml-2 flex items-center gap-2">
+              <Link to="/login" className={buttonClass('ghost', 'sm')}>
                 {t('nav.login')}
               </Link>
-              <Link
-                to="/register"
-                className="btn-on-dark rounded px-4 py-2 text-sm font-bold hover:bg-accent hover:!text-[#1c1d1f]"
-              >
+              <Link to="/register" className={buttonClass('primary', 'sm')}>
                 {t('nav.signup')}
               </Link>
-            </>
+            </div>
           )}
         </nav>
       </div>
 
       {menuOpen && (
-        <div className="border-t border-dark-muted px-4 py-4 lg:hidden">
+        <div className="border-t border-border px-4 py-4 lg:hidden">
           <NavbarSearch
             key={`mobile-${catalogSearchKey}`}
             initialQuery={catalogInitialQ}
             onSubmit={submitSearch}
             className="mb-4"
           />
-          <button
-            type="button"
-            onClick={toggleLocale}
-            className="mb-3 flex w-full items-center gap-2 rounded px-3 py-2 hover:bg-dark-muted"
-          >
-            <Languages className="h-4 w-4" />
+          <button type="button" onClick={toggleLocale} className={cn(navLinkClass, 'mb-2 flex w-full items-center gap-2')}>
+            <Languages className="h-4 w-4" aria-hidden />
             {t('nav.language')}: {locale.toUpperCase()}
           </button>
-          <div className="flex flex-col gap-1">
-            <Link to="/courses" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-              {t('nav.explore')}
-            </Link>
-            <Link to="/bundles" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-              {t('nav.bundles')}
-            </Link>
-            {isAuthenticated ? (
-              <>
-                <Link to="/my-learning" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.myLearning')}
-                </Link>
-                <Link to="/subscriptions" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.subscriptions')}
-                </Link>
-                <Link to="/affiliate" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.affiliate')}
-                </Link>
-                <Link to="/wishlist" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.wishlist')}
-                </Link>
-                <Link to="/cart" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.cart')}
-                </Link>
-                <Link to="/notifications" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.notifications')}{unreadCount > 0 ? ` (${unreadCount})` : ''}
-                </Link>
-                <Link to="/orders" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.orders')}
-                </Link>
-                {isInstructor && (
-                  <Link to="/instructor/dashboard" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                    {t('nav.instructor')}
-                  </Link>
-                )}
-                {isAdmin && (
-                  <Link to="/admin" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                    {t('nav.admin')}
-                  </Link>
-                )}
-                <Link to="/profile" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.profile')}
-                </Link>
-                <Link to="/certificates" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.certificates')}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout()
-                    setMenuOpen(false)
-                    navigate('/')
-                  }}
-                  className="rounded px-3 py-2 text-left hover:bg-dark-muted"
-                >
-                  {t('nav.logout')}
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.login')}
-                </Link>
-                <Link to="/register" className="rounded px-3 py-2 hover:bg-dark-muted" onClick={() => setMenuOpen(false)}>
-                  {t('nav.signup')}
-                </Link>
-              </>
-            )}
-          </div>
+          <div className="flex flex-col gap-0.5">{navLinks}</div>
+          {isAuthenticated ? (
+            <div className="mt-4 flex flex-col gap-0.5 border-t border-border pt-4">
+              <Link to="/profile" className={navLinkClass} onClick={() => setMenuOpen(false)}>
+                {t('nav.profile')}
+              </Link>
+              <Link to="/orders" className={navLinkClass} onClick={() => setMenuOpen(false)}>
+                {t('nav.orders')}
+              </Link>
+              <Link to="/certificates" className={navLinkClass} onClick={() => setMenuOpen(false)}>
+                {t('nav.certificates')}
+              </Link>
+              <button
+                type="button"
+                className={cn(navLinkClass, 'text-left')}
+                onClick={() => {
+                  logout()
+                  setMenuOpen(false)
+                  navigate('/')
+                }}
+              >
+                {t('nav.logout')}
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+              <Link to="/login" className={buttonClass('secondary', 'md', 'w-full')} onClick={() => setMenuOpen(false)}>
+                {t('nav.login')}
+              </Link>
+              <Link to="/register" className={buttonClass('primary', 'md', 'w-full')} onClick={() => setMenuOpen(false)}>
+                {t('nav.signup')}
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

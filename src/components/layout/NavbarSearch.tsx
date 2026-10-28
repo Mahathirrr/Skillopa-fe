@@ -25,7 +25,7 @@ export function NavbarSearch({ initialQuery = '', onSubmit, className }: Props) 
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('nav.searchPlaceholder')}
-          className="w-full rounded-full border border-transparent bg-white py-2 pl-10 pr-4 text-sm text-dark outline-none focus:border-accent"
+          className="w-full rounded-full border border-border bg-background py-2.5 pl-10 pr-4 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
       </div>
     </form>

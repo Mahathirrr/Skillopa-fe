@@ -17,13 +17,16 @@
     "cart": "Cart",
     "notifications": "Notifications",
     "searchPlaceholder": "Search for courses",
-    "language": "Language"
+    "language": "Language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "home": {
     "heroBadge": "Curated free video courses",
     "heroTitle": "Learn skills that move your career forward",
     "heroSubtitle": "Learn digital skills through curated courses with clear YouTube attribution. No fake reviews or inflated stats.",
     "heroImageAlt": "Students learning online",
+    "heroPanelHint": "Curated courses with verified YouTube lessons, clear attribution, and trackable progress.",
     "exploreCourses": "Explore courses",
     "startFree": "Start for free",
     "statsCourses": "Courses available",
@@ -111,9 +114,30 @@
     "sortPopular": "Most popular",
     "sortRating": "Highest rated",
     "sortPriceAsc": "Price: low to high",
-    "sortPriceDesc": "Price: high to low"
+    "sortPriceDesc": "Price: high to low",
+    "free": "Free"
+  },
+  "errors": {
+    "notFoundCode": "404",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "This link may be outdated. Go home or browse the course catalog.",
+    "backHome": "Back to home"
   },
   "course": {
+    "whatYouWillLearn": "What you will learn",
+    "about": "About this course",
+    "noDescription": "No description provided.",
+    "requirements": "Requirements",
+    "targetAudience": "Who this is for",
+    "videoSource": "Video source",
+    "curatedBy": "Curated by {{name}}",
+    "enrollmentCount": "{{count}} learners",
+    "lecturesCount": "{{count}} lectures",
+    "freePreview": "Free preview",
+    "courseContent": "Course content",
+    "enrollFree": "Enroll for free",
+    "addToCart": "Add to cart",
+    "goToCourse": "Go to course",
     "overview": "Overview",
     "qa": "Q&A",
     "qaCount": "Q&A ({{count}})",
@@ -155,6 +179,7 @@
     "subtitle": "Continue courses you enrolled in, free and paid",
     "emptyTitle": "No enrolled courses yet",
     "emptyHint": "Browse the catalog and enroll in free courses or purchase paid ones.",
+    "noFilterResults": "No courses match this filter.",
     "browse": "Browse courses",
     "progress": "Progress",
     "completed": "Completed",

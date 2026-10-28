@@ -185,36 +185,38 @@ export function CourseDetailPage() {
       {jsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       )}
-      <section className="bg-dark text-white">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[1fr_380px] lg:px-6">
           <div>
-            <p className="mb-2 text-sm text-accent">{course.category_name}</p>
-            <h1 className="mb-3 text-3xl font-bold lg:text-4xl">{course.title}</h1>
-            {course.subtitle && <p className="mb-4 text-lg text-white/80">{course.subtitle}</p>}
-            <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
+            <p className="mb-2 text-sm font-medium text-primary">{course.category_name}</p>
+            <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">{course.title}</h1>
+            {course.subtitle && <p className="mb-4 text-lg text-muted">{course.subtitle}</p>}
+            <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-muted">
               {course.rating_count > 0 ? (
                 <StarRating rating={course.rating_avg} count={course.rating_count} showEmpty={false} />
               ) : (
-                <span className="text-white/70">{t('course.noReviewsYet')}</span>
+                <span>{t('course.noReviewsYet')}</span>
               )}
-              <span>{course.enrollment_count?.toLocaleString() ?? 0} students</span>
+              {(course.enrollment_count ?? 0) > 0 && (
+                <span>{t('course.enrollmentCount', { count: course.enrollment_count })}</span>
+              )}
               {course.instructor_name &&
                 (instructor?.slug ? (
-                  <Link to={`/instructor/${instructor.slug}`} className="text-accent hover:underline">
-                    Created by {course.instructor_name}
+                  <Link to={`/instructor/${instructor.slug}`} className="font-medium text-primary hover:underline">
+                    {t('course.curatedBy', { name: course.instructor_name })}
                   </Link>
                 ) : (
-                  <span>Created by {course.instructor_name}</span>
+                  <span>{t('course.curatedBy', { name: course.instructor_name })}</span>
                 ))}
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-white/70">
+            <div className="flex flex-wrap gap-4 text-sm text-muted">
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 {formatDuration(totalDuration)}
               </span>
               <span className="flex items-center gap-1">
                 <Play className="h-4 w-4" />
-                {totalLectures} lectures
+                {t('course.lecturesCount', { count: totalLectures })}
               </span>
               <span className="flex items-center gap-1 capitalize">
                 <Globe className="h-4 w-4" />
@@ -239,7 +241,7 @@ export function CourseDetailPage() {
                     to={learnUrl(course.slug)}
                     className="mb-2 block w-full rounded bg-primary py-3 text-center text-sm font-bold text-white hover:bg-primary-dark"
                   >
-                    Go to course
+                    {t('course.goToCourse')}
                   </Link>
                 ) : (
                   <button
@@ -248,7 +250,7 @@ export function CourseDetailPage() {
                     disabled={enrollMutation.isPending || cartMutation.isPending}
                     className="mb-2 w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
                   >
-                    {course.is_free ? 'Enroll for free' : 'Add to cart'}
+                    {course.is_free ? t('course.enrollFree') : t('course.addToCart')}
                   </button>
                 )}
                 {isAuthenticated && (
@@ -257,7 +259,7 @@ export function CourseDetailPage() {
                     onClick={() => wishlistMutation.mutate()}
                     className="w-full rounded border border-dark py-3 text-sm font-bold hover:bg-bg"
                   >
-                    Add to wishlist
+                    {t('course.addToWishlist')}
                   </button>
                 )}
                 {isAuthenticated && !course.is_free && (
@@ -308,12 +310,65 @@ export function CourseDetailPage() {
 
           {activeTab === 'overview' ? (
             <>
+              {course.learning_objectives && course.learning_objectives.length > 0 && (
+                <section>
+                  <h2 className="mb-4 text-2xl font-bold">{t('course.whatYouWillLearn')}</h2>
+                  <ul className="grid gap-3 rounded border border-border bg-surface p-6 sm:grid-cols-2">
+                    {course.learning_objectives.map((item) => (
+                      <li key={item} className="flex gap-2 text-sm text-muted">
+                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
               <section>
-                <h2 className="mb-4 text-2xl font-bold">What you will learn</h2>
+                <h2 className="mb-4 text-2xl font-bold">{t('course.about')}</h2>
                 <div className="rounded border border-border bg-surface p-6">
-                  <p className="whitespace-pre-line text-muted">{course.description || 'No description provided.'}</p>
+                  <p className="whitespace-pre-line text-muted">{course.description || t('course.noDescription')}</p>
                 </div>
               </section>
+
+              {(course.requirements || course.target_audience) && (
+                <section className="grid gap-6 sm:grid-cols-2">
+                  {course.requirements && (
+                    <div className="rounded border border-border bg-surface p-6">
+                      <h3 className="mb-2 font-bold">{t('course.requirements')}</h3>
+                      <p className="text-sm text-muted">{course.requirements}</p>
+                    </div>
+                  )}
+                  {course.target_audience && (
+                    <div className="rounded border border-border bg-surface p-6">
+                      <h3 className="mb-2 font-bold">{t('course.targetAudience')}</h3>
+                      <p className="text-sm text-muted">{course.target_audience}</p>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {course.video_source_name && (
+                <section className="rounded border border-border bg-bg px-4 py-3 text-sm text-muted">
+                  {t('course.videoSource')}:{' '}
+                  {course.video_source_url ? (
+                    <a
+                      href={course.video_source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {course.video_source_name}
+                    </a>
+                  ) : (
+                    <span className="font-medium text-dark">{course.video_source_name}</span>
+                  )}{' '}
+                  · YouTube
+                  {course.video_license ? (
+                    <span className="mt-1 block text-xs opacity-80">{course.video_license}</span>
+                  ) : null}
+                </section>
+              )}
 
               {previewLecture && (
                 <section ref={previewPlayerRef} className="scroll-mt-24">
@@ -333,7 +388,7 @@ export function CourseDetailPage() {
 
               {previewLectures.length > 0 && (
                 <section>
-                  <h2 className="mb-4 text-2xl font-bold">Free preview</h2>
+                  <h2 className="mb-4 text-2xl font-bold">{t('course.freePreview')}</h2>
                   <div className="space-y-2">
                     {previewLectures.map((lecture) => (
                       <button
@@ -359,7 +414,7 @@ export function CourseDetailPage() {
               )}
 
               <section>
-                <h2 className="mb-4 text-2xl font-bold">Course content</h2>
+                <h2 className="mb-4 text-2xl font-bold">{t('course.courseContent')}</h2>
                 <div className="rounded border border-border bg-surface">
                   <div className="border-b border-border px-4 py-3 text-sm font-semibold">
                     {curriculum.length} sections · {totalLectures} lectures · {formatDuration(totalDuration)} total length
@@ -487,7 +542,7 @@ export function CourseDetailPage() {
                 to={learnUrl(course.slug)}
                 className="mb-2 block w-full rounded bg-primary py-3 text-center text-sm font-bold text-white"
               >
-                Go to course
+                {t('course.goToCourse')}
               </Link>
             ) : (
               <button

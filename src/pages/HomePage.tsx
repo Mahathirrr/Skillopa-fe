@@ -21,8 +21,8 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { StarRating } from '@/components/StarRating'
 import { useLandingSmoothScroll } from '@/hooks/useLandingSmoothScroll'
 import { api } from '@/lib/api'
+import { SkillopaLogo } from '@/components/SkillopaLogo'
 import { EMPTY_DISPLAY } from '@/lib/empty-display'
-import heroImage from '@/assets/hero.png'
 
 const categoryIcons: Record<string, typeof Code2> = {
   development: Code2,
@@ -135,43 +135,41 @@ export function HomePage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-dark text-white">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 lg:grid-cols-2 lg:px-6 lg:py-24">
+      <section className="relative overflow-hidden border-b border-border bg-surface">
+        <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-brand-soft/80 blur-3xl" aria-hidden />
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:px-6 lg:py-20">
           <div>
-            <div className="landing-hero-in mb-4 inline-flex items-center gap-2 rounded-full bg-accent/20 px-3 py-1 text-xs font-semibold text-accent">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="landing-hero-in mb-4 inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-primary">
+              <Sparkles className="h-3.5 w-3.5" aria-hidden />
               {t('home.heroBadge')}
             </div>
-            <h1 className="landing-hero-in landing-hero-in-delay-1 mb-4 text-4xl font-bold leading-tight lg:text-5xl">
+            <h1 className="landing-hero-in landing-hero-in-delay-1 mb-4 text-4xl font-bold leading-tight tracking-tight text-foreground lg:text-5xl">
               {t('home.heroTitle')}
             </h1>
-            <p className="landing-hero-in landing-hero-in-delay-2 mb-8 max-w-lg text-lg text-white/75">
+            <p className="landing-hero-in landing-hero-in-delay-2 mb-8 max-w-lg text-lg text-muted">
               {t('home.heroSubtitle')}
             </p>
             <div className="landing-hero-in landing-hero-in-delay-3 flex flex-wrap gap-3">
               <Link
                 to="/courses"
-                className="inline-flex items-center gap-2 rounded bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-dark"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-dark"
               >
                 {t('home.exploreCourses')}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center gap-2 rounded border border-white/30 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground hover:bg-background"
               >
                 {t('home.startFree')}
               </Link>
             </div>
           </div>
-          <div className="relative hidden lg:block">
-            <img
-              data-parallax="0.1"
-              src={heroImage}
-              alt={t('home.heroImageAlt')}
-              className="landing-hero-in landing-hero-in-delay-2 rounded-lg shadow-2xl will-change-transform"
-            />
+          <div className="landing-hero-in landing-hero-in-delay-2 hidden lg:flex lg:justify-end">
+            <div className="relative w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-md">
+              <SkillopaLogo className="mx-auto h-20 w-20" />
+              <p className="mt-6 text-center text-sm leading-relaxed text-muted">{t('home.heroPanelHint')}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -304,19 +302,19 @@ export function HomePage() {
       </ScrollReveal>
 
       {/* Features */}
-      <ScrollReveal as="section" className="bg-dark py-14 text-white">
+      <ScrollReveal as="section" className="border-y border-border bg-brand-soft/40 py-14">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="mb-10 text-center">
-            <h2 className="text-2xl font-bold">{t('home.whyTitle')}</h2>
-            <p className="mt-2 text-white/70">{t('home.whySubtitle')}</p>
+            <h2 className="text-2xl font-bold text-foreground">{t('home.whyTitle')}</h2>
+            <p className="mt-2 text-muted">{t('home.whySubtitle')}</p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {features.map((f, i) => (
               <ScrollReveal key={f.title} delay={i * 120}>
-                <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-                  <f.icon className="mb-4 h-8 w-8 text-accent" />
-                  <h3 className="mb-2 font-bold">{f.title}</h3>
-                  <p className="text-sm text-white/70">{f.desc}</p>
+                <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                  <f.icon className="mb-4 h-8 w-8 text-primary" aria-hidden />
+                  <h3 className="mb-2 font-bold text-foreground">{f.title}</h3>
+                  <p className="text-sm text-muted">{f.desc}</p>
                 </div>
               </ScrollReveal>
             ))}

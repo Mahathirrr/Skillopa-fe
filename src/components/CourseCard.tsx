@@ -1,7 +1,9 @@
 import { Heart, ShoppingCart } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { StarRating } from '@/components/StarRating'
+import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/lib/api'
 import { mediaUrl } from '@/lib/api'
 import { cn, courseUrl, formatPrice } from '@/lib/utils'
@@ -15,14 +17,15 @@ type Props = {
 }
 
 export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, className }: Props) {
+  const { t } = useTranslation()
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded border border-border bg-surface shadow-sm transition hover:shadow-md',
+        'group flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-md',
         className,
       )}
     >
-      <Link to={courseUrl(course.slug)} className="relative block aspect-[16/9] overflow-hidden bg-dark-muted">
+      <Link to={courseUrl(course.slug)} className="relative block aspect-[16/9] overflow-hidden bg-background">
         {(() => {
           const thumb =
             course.preview_youtube_thumbnail_url ||
@@ -41,9 +44,9 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
         )
         })()}
         {course.is_free && (
-          <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-xs font-bold text-ink">
-            Free
-          </span>
+          <Badge tone="free" className="absolute left-2 top-2">
+            {t('catalog.free')}
+          </Badge>
         )}
       </Link>
 

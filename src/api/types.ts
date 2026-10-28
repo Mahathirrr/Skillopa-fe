@@ -57,6 +57,13 @@ export type Course = {
   subtitle?: string
   slug: string
   description?: string
+  learning_objectives?: string[]
+  requirements?: string
+  target_audience?: string
+  curator_label?: string
+  video_source_name?: string
+  video_source_url?: string
+  video_license?: string
   category_id: number
   instructor_id: number
   level: string

@@ -1,6 +1,7 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 
 import { MainLayout } from '@/components/layout/MainLayout'
+import { NotFoundPage } from '@/pages/NotFoundPage'
 import { adminRoutes } from '@/router/routes/admin'
 import { instructorRoutes } from '@/router/routes/instructor'
 import { publicRoutes } from '@/router/routes/public'
@@ -15,7 +16,7 @@ export const router = createBrowserRouter([
       studentRoutes,
       instructorRoutes,
       adminRoutes,
-      { path: '*', element: <Navigate to="/" replace /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])

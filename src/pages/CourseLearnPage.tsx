@@ -421,7 +421,7 @@ export function CourseLearnPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] flex-col lg:flex-row">
-      <div className="flex flex-1 flex-col bg-dark">
+      <div className="learn-shell flex flex-1 flex-col bg-foreground text-white">
         <div className="border-b border-dark-muted px-4 py-3 text-white">
           <Link to={`/courses/${course.slug}`} className="text-sm text-white/70 hover:text-white">
             {course.title}
@@ -501,7 +501,7 @@ export function CourseLearnPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-dark-muted bg-dark-muted px-4 py-3 text-white">
+        <div className="flex items-center justify-between border-t border-white/10 bg-foreground px-4 py-3 text-white">
           <div className="text-sm">
             Progress: <span className="font-bold text-accent">{Math.round(progress)}%</span>
           </div>

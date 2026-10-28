@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CourseCard } from '@/components/CourseCard'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { PageContainer, PageHeader } from '@/components/ui/page-container'
 import { api, type CourseListParams } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +19,7 @@ const SORT_OPTIONS = [
 ] as const
 
 const filterFieldClass =
-  'w-full min-w-0 rounded border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary'
+  'w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
 
 function CatalogSearchInput({
   q,
@@ -136,11 +137,8 @@ export function CatalogPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-dark">{t('catalog.title')}</h1>
-        <p className="mt-1 text-muted">{t('catalog.subtitle')}</p>
-      </div>
+    <PageContainer>
+      <PageHeader title={t('catalog.title')} description={t('catalog.subtitle')} />
 
       <div className="mb-6 flex flex-col gap-4">
         <CatalogSearchInput key={q} q={q} params={params} setParams={setParams} />
@@ -259,6 +257,6 @@ export function CatalogPage() {
           </div>
         </>
       )}
-    </div>
+    </PageContainer>
   )
 }

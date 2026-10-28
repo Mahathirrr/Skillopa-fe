@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { EmptyState } from '@/components/ui/empty-state'
+import { PageContainer, PageHeader } from '@/components/ui/page-container'
 import { api, mediaUrl, type Enrollment } from '@/lib/api'
 import { formatPrice, learnUrl } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
@@ -47,9 +49,8 @@ export function MyLearningPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
-      <h1 className="mb-2 text-3xl font-bold">{t('myLearning.title')}</h1>
-      <p className="mb-6 text-muted">{t('myLearning.subtitle')}</p>
+    <PageContainer>
+      <PageHeader title={t('myLearning.title')} description={t('myLearning.subtitle')} />
 
       {enrollments.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -76,16 +77,14 @@ export function MyLearningPage() {
       )}
 
       {enrollments.length === 0 ? (
-        <div className="rounded border border-border bg-surface py-16 text-center">
-          <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted" aria-hidden />
-          <p className="text-lg font-semibold">{t('myLearning.emptyTitle')}</p>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted">{t('myLearning.emptyHint')}</p>
-          <Link to="/courses" className="mt-4 inline-block font-semibold text-primary hover:underline">
-            {t('myLearning.browse')}
-          </Link>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title={t('myLearning.emptyTitle')}
+          description={t('myLearning.emptyHint')}
+          action={{ label: t('home.exploreCourses'), to: '/courses' }}
+        />
       ) : filtered.length === 0 ? (
-        <p className="text-muted">{t('myLearning.emptyTitle')}</p>
+        <p className="text-center text-muted">{t('myLearning.noFilterResults')}</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((enrollment) => {
@@ -149,6 +148,6 @@ export function MyLearningPage() {
           })}
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

@@ -31,6 +31,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install chromium
+      - name: Wait for production ready
+        run: |
+          for attempt in $(seq 1 36); do
+            if curl -sf --max-time 8 https://skillopa.showcaseproject.my.id/ready >/dev/null; then
+              echo "prod ready"
+              exit 0
+            fi
+            echo "waiting for prod ($attempt/36)..."
+            sleep 10
+          done
+          echo "prod not ready after 6 minutes" >&2
+          exit 1
       - name: Install poppler (pdftoppm untuk banding PDF sertifikat)
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - name: Auth & OAuth (prod)

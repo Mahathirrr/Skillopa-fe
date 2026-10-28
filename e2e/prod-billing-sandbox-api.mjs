@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 const API_BASE = (process.env.API_BASE ?? 'https://skillopa.showcaseproject.my.id/api').replace(/\/$/, '')
-const EMAIL = process.env.E2E_EMAIL ?? 'ahmad.rizki@student.usk.ac.id'
-const PASSWORD = process.env.E2E_PASSWORD ?? 'student123'
 
 function assert(name, ok, detail) {
   if (!ok) {
@@ -9,6 +7,28 @@ function assert(name, ok, detail) {
     process.exit(1)
   }
   console.log('OK ', name)
+}
+
+async function freshStudent() {
+  const email = `billing+${Date.now()}@showcaseproject.my.id`
+  const password = 'E2eTestPass123!'
+  const reg = await fetch(`${API_BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'Billing E2E', email, password, role: 'student' }),
+  })
+  if (reg.status === 201) {
+    const body = await reg.json()
+    return { token: body.token }
+  }
+  const login = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  const body = await login.json()
+  if (!login.ok || !body.token) throw new Error('register/login failed')
+  return { token: body.token }
 }
 
 async function main() {
@@ -19,34 +39,15 @@ async function main() {
   assert('billing sandbox', status.sandbox === true, status)
   assert('provider mayar', status.provider === 'mayar', status)
 
-  const loginRes = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
-  })
-  const login = await loginRes.json()
-  assert('login', loginRes.ok && login.token, loginRes.status)
-  const token = login.token
+  const { token } = await freshStudent()
+  assert('auth token', !!token, null)
 
-  const coursesRes = await fetch(`${API_BASE}/courses?limit=20&is_free=false`)
+  const coursesRes = await fetch(`${API_BASE}/courses?limit=30`)
   const coursesBody = await coursesRes.json()
   const courses = coursesBody.data ?? coursesBody.courses ?? []
-  assert('paid courses list', courses.length > 0, coursesBody)
-
-  const enrollRes = await fetch(`${API_BASE}/enrollments`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  const enrollBody = await enrollRes.json()
-  const enrolledIds = new Set((enrollBody.enrollments ?? []).map((e) => e.course_id))
-
-  let courseId = null
-  for (const c of courses) {
-    if (!enrolledIds.has(c.id)) {
-      courseId = c.id
-      break
-    }
-  }
-  assert('find unenrolled paid course', courseId != null, { enrolledIds: [...enrolledIds] })
+  const paid = courses.find((c) => !c.is_free && Number(c.price) > 0)
+  assert('paid course id', paid != null, courses.slice(0, 5))
+  const courseId = paid.id
 
   const checkoutRes = await fetch(`${API_BASE}/orders/checkout`, {
     method: 'POST',
@@ -64,8 +65,7 @@ async function main() {
     headers: { Authorization: `Bearer ${token}` },
     signal: AbortSignal.timeout(120_000),
   })
-  const simBody = await simRes.text()
-  assert('simulate', simRes.ok, `${simRes.status} ${simBody}`)
+  assert('simulate', simRes.ok, `${simRes.status} ${await simRes.text()}`)
 
   const syncRes = await fetch(`${API_BASE}/orders/${orderId}/sync`, {
     method: 'POST',
@@ -88,4 +88,7 @@ async function main() {
   console.log('\nSkillopa billing sandbox API smoke LULUS.')
 }
 
-main()
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})

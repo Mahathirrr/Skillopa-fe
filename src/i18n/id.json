@@ -204,7 +204,13 @@
     "demoCheckout": "Checkout demo platform",
     "demoCheckoutDesc": "Tanpa gateway nyata — buat pesanan pending, lalu konfirmasi untuk simulasi pembayaran dan akses kursus.",
     "placeDemoOrder": "Buat pesanan demo",
+    "placeMayarOrder": "Lanjut ke pembayaran Mayar",
     "confirmDemoPayment": "Konfirmasi pembayaran demo",
+    "mayarSandbox": "Pembayaran Mayar (sandbox)",
+    "mayarSandboxDesc": "Setelah checkout, selesaikan di halaman Mayar (mode uji). Lalu simulasi atau sync untuk membuka kursus.",
+    "openMayarPayment": "Buka halaman pembayaran Mayar",
+    "mayarSimulateAndSync": "Simulasi sandbox & sync",
+    "syncPayment": "Sync status pembayaran",
     "bundleOption": "Atau ambil paket kursus gratis",
     "selectBundle": "Pilih paket",
     "enrollBundle": "Daftar paket"

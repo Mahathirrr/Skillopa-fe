@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id playwright test",
-    "test:e2e:prod:google-oauth": "PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id playwright test e2e/google-oauth.spec.ts"
+    "test:e2e:prod:google-oauth": "PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id playwright test e2e/google-oauth.spec.ts",
+    "test:billing:api": "node e2e/prod-billing-sandbox-api.mjs",
+    "test:e2e:billing": "playwright test e2e/billing.spec.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",

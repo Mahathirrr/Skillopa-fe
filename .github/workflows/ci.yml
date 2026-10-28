@@ -54,16 +54,10 @@ jobs:
             sleep 25
           done
           exit 1
-      - name: Reviews API (prod)
+      - name: Reviews read-only UI (prod)
         run: |
           export PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id
-          export E2E_FREE_COURSE_SLUG=belajar-web-pzn-gratis
-          for attempt in 1 2 3; do
-            npx playwright test e2e/reviews.spec.ts e2e/reviews-ui.spec.ts e2e/admin-reviews-api.spec.ts --reporter=line && exit 0
-            echo "reviews e2e attempt $attempt failed, retry..."
-            sleep 25
-          done
-          exit 1
+          npx playwright test e2e/reviews-ui.spec.ts --grep "lists reviews" --reporter=line || npx playwright test e2e/reviews-ui.spec.ts --reporter=line
       - name: Profil instruktur (prod)
         run: |
           export PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id

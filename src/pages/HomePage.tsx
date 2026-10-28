@@ -93,27 +93,23 @@ export function HomePage() {
   const platformStats = statsData?.stats
 
   const stats = [
-    {
+    platformStats?.show_courses !== false && {
       label: t('home.statsCourses'),
       value: platformStats ? String(platformStats.total_courses) : EMPTY_DISPLAY,
     },
-    {
+    platformStats?.show_active_learners && {
       label: t('home.statsStudents'),
-      value: platformStats
-        ? platformStats.total_enrollments.toLocaleString()
-        : EMPTY_DISPLAY,
+      value: platformStats.active_learners?.toLocaleString() ?? EMPTY_DISPLAY,
     },
-    {
+    platformStats?.show_instructors && {
       label: t('home.statsInstructors'),
-      value: platformStats ? String(platformStats.total_instructors) : EMPTY_DISPLAY,
+      value: String(platformStats?.total_instructors ?? EMPTY_DISPLAY),
     },
-    {
+    platformStats?.show_rating && {
       label: t('home.statsRating'),
-      value: platformStats && platformStats.average_rating > 0
-        ? platformStats.average_rating.toFixed(1)
-        : EMPTY_DISPLAY,
+      value: platformStats.average_rating.toFixed(1),
     },
-  ]
+  ].filter(Boolean) as { label: string; value: string }[]
 
   const testimonials =
     platformStats?.featured_reviews?.length
@@ -180,7 +176,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
+      {stats.length > 0 && (
       <ScrollReveal as="section" className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 lg:grid-cols-4 lg:px-6">
           {stats.map((stat, i) => (
@@ -191,6 +187,7 @@ export function HomePage() {
           ))}
         </div>
       </ScrollReveal>
+      )}
 
       {/* Featured courses */}
       <ScrollReveal as="section" className="mx-auto max-w-7xl px-4 py-14 lg:px-6">
@@ -344,7 +341,7 @@ export function HomePage() {
         </div>
       </ScrollReveal>
 
-      {/* Testimonials */}
+      {(platformStats?.show_testimonials || testimonials.length > 0) && (
       <ScrollReveal as="section" className="bg-surface py-14">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="mb-10 text-center">
@@ -371,6 +368,7 @@ export function HomePage() {
           </div>
         </div>
       </ScrollReveal>
+      )}
 
       {/* Instructor CTA */}
       <ScrollReveal as="section" className="mx-auto max-w-7xl px-4 py-16 lg:px-6">

@@ -20,9 +20,9 @@
     "language": "Bahasa"
   },
   "home": {
-    "heroBadge": "Kursus baru ditambahkan setiap minggu",
+    "heroBadge": "Kursus gratis berbasis video terkurasi",
     "heroTitle": "Pelajari skill yang memajukan karier Anda",
-    "heroSubtitle": "Bergabung dengan ribuan pelajar menguasai skill yang dibutuhkan industri bersama instruktur ahli dan proyek praktis.",
+    "heroSubtitle": "Belajar skill digital lewat kursus terkurasi. Video dari sumber YouTube yang jelas atribusinya, tanpa ulasan atau statistik palsu.",
     "heroImageAlt": "Siswa belajar online",
     "exploreCourses": "Jelajahi kursus",
     "startFree": "Mulai gratis",
@@ -62,7 +62,7 @@
     "bundlesSubtitle": "Dapatkan beberapa kursus dengan harga diskon melalui paket pilihan kami.",
     "viewBundles": "Lihat paket",
     "testimonialsTitle": "Apa kata pelajar",
-    "testimonialsSubtitle": "Bergabung dengan ribuan siswa puas",
+    "testimonialsSubtitle": "Ulasan nyata dari peserta (ditampilkan setelah kurator menandai featured)",
     "noTestimonials": "Ulasan peserta akan muncul di sini setelah kursus dinilai.",
     "instructorTitle": "Jadi instruktur",
     "instructorSubtitle": "Bagikan keahlian Anda ke pelajar di seluruh dunia. Buat kursus, bangun audiens, dan hasilkan pendapatan sesuai jadwal Anda.",
@@ -129,6 +129,7 @@
     "reviewsSortNewest": "Terbaru",
     "reviewsSortHelpful": "Paling membantu",
     "verifiedBuyer": "Pembeli terverifikasi",
+    "enrolledParticipant": "Peserta terdaftar",
     "reviewEdited": "diedit",
     "instructorReply": "Guru",
     "helpfulVotes": "membantu",

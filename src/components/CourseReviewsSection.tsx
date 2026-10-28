@@ -16,6 +16,7 @@ type Props = {
   currentUserId?: number
   minProgressHint?: number
   enrollmentProgress?: number
+  courseIsFree?: boolean
 }
 
 export function CourseReviewsSection({
@@ -26,6 +27,7 @@ export function CourseReviewsSection({
   currentUserId,
   minProgressHint = 20,
   enrollmentProgress = 0,
+  courseIsFree = false,
 }: Props) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -180,8 +182,11 @@ export function CourseReviewsSection({
               <div className="flex flex-wrap items-center gap-2">
                 <StarRating rating={r.rating} variant="stars" />
                 <span className="font-semibold">{r.user_name}</span>
-                {r.verified_purchaser && (
+                {r.verified_purchaser && !courseIsFree && (
                   <span className="rounded bg-bg px-2 py-0.5 text-xs text-muted">{t('course.verifiedBuyer')}</span>
+                )}
+                {courseIsFree && (
+                  <span className="rounded bg-bg px-2 py-0.5 text-xs text-muted">{t('course.enrolledParticipant')}</span>
                 )}
                 {r.edited && <span className="text-xs text-muted">{t('course.reviewEdited')}</span>}
               </div>

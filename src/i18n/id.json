@@ -201,6 +201,10 @@
     "confirmFreeEnroll": "Daftar kursus gratis",
     "processing": "Memproses...",
     "paymentNotAvailable": "Kursus berbayar membutuhkan pembayaran. Fitur pembayaran belum tersedia — hapus kursus berbayar dari keranjang atau pilih kursus gratis.",
+    "demoCheckout": "Checkout demo platform",
+    "demoCheckoutDesc": "Tanpa gateway nyata — buat pesanan pending, lalu konfirmasi untuk simulasi pembayaran dan akses kursus.",
+    "placeDemoOrder": "Buat pesanan demo",
+    "confirmDemoPayment": "Konfirmasi pembayaran demo",
     "bundleOption": "Atau ambil paket kursus gratis",
     "selectBundle": "Pilih paket",
     "enrollBundle": "Daftar paket"

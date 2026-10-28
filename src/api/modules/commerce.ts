@@ -77,9 +77,9 @@ export const commerceApi = {
     })
   },
 
-  confirmOrder(token: string, orderNumber: string) {
-    return request<{ order: Order; enrollments: Enrollment[]; message: string }>(
-      `/orders/${orderNumber}/confirm`,
+  confirmOrder(token: string, orderId: number) {
+    return request<{ order: Order; enrollments?: Enrollment[]; message?: string }>(
+      `/orders/${orderId}/confirm`,
       { method: 'POST', token },
     )
   },

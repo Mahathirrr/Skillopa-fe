@@ -202,6 +202,10 @@
     "confirmFreeEnroll": "Enroll in free courses",
     "processing": "Processing...",
     "paymentNotAvailable": "Paid courses require payment. Payment is not available yet — remove paid courses from your cart or choose free courses.",
+    "demoCheckout": "Platform demo checkout",
+    "demoCheckoutDesc": "No live payment gateway — place a pending order, then confirm to simulate payment and unlock course access.",
+    "placeDemoOrder": "Place demo order",
+    "confirmDemoPayment": "Confirm demo payment",
     "bundleOption": "Or enroll in a free bundle",
     "selectBundle": "Select bundle",
     "enrollBundle": "Enroll in bundle"

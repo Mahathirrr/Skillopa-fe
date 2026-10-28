@@ -19,6 +19,7 @@ export function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
   const [couponMsg, setCouponMsg] = useState('')
   const [selectedBundleId, setSelectedBundleId] = useState('')
+  const [pendingOrderId, setPendingOrderId] = useState<number | null>(null)
 
   const { data: bundlesData } = useQuery({
     queryKey: ['bundles'],
@@ -57,18 +58,46 @@ export function CheckoutPage() {
     },
   })
 
+  async function enrollFreeCourses() {
+    for (const course of freeCourses) {
+      await api.enrollFree(token!, course.id)
+    }
+  }
+
   const checkoutMutation = useMutation({
     mutationFn: async () => {
       if (paidCourses.length > 0) {
-        throw new ApiError(t('checkout.paymentNotAvailable'), 501)
+        const res = await api.createOrderCheckout(
+          token!,
+          paidCourses.map((c) => c.id),
+          appliedCoupon?.code,
+        )
+        setPendingOrderId(res.order.id)
+        return
       }
-      for (const course of freeCourses) {
-        await api.enrollFree(token!, course.id)
-      }
+      await enrollFreeCourses()
     },
     onSuccess: () => {
-      navigate('/my-learning')
+      if (paidCourses.length === 0) {
+        navigate('/my-learning')
+      }
     },
+    onError: (e) => {
+      setError(e instanceof ApiError ? e.message : t('common.error'))
+    },
+  })
+
+  const confirmDemoMutation = useMutation({
+    mutationFn: async () => {
+      if (pendingOrderId == null) {
+        throw new Error('missing order')
+      }
+      await api.confirmOrder(token!, pendingOrderId)
+      if (freeCourses.length > 0) {
+        await enrollFreeCourses()
+      }
+    },
+    onSuccess: () => navigate('/my-learning'),
     onError: (e) => {
       setError(e instanceof ApiError ? e.message : t('common.error'))
     },
@@ -101,9 +130,10 @@ export function CheckoutPage() {
           </ul>
 
           {paidCourses.length > 0 && (
-            <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-              {t('checkout.paymentNotAvailable')}
-            </p>
+            <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+              <p className="font-semibold text-primary">{t('checkout.demoCheckout')}</p>
+              <p className="mt-1 text-muted">{t('checkout.demoCheckoutDesc')}</p>
+            </div>
           )}
 
           {subtotal > 0 && (
@@ -184,14 +214,32 @@ export function CheckoutPage() {
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => checkoutMutation.mutate()}
-            disabled={checkoutMutation.isPending || freeCourses.length === 0}
-            className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
-          >
-            {checkoutMutation.isPending ? t('checkout.processing') : t('checkout.confirmFreeEnroll')}
-          </button>
+          {pendingOrderId != null ? (
+            <button
+              type="button"
+              onClick={() => confirmDemoMutation.mutate()}
+              disabled={confirmDemoMutation.isPending}
+              className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+            >
+              {confirmDemoMutation.isPending ? t('checkout.processing') : t('checkout.confirmDemoPayment')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => checkoutMutation.mutate()}
+              disabled={
+                checkoutMutation.isPending ||
+                (paidCourses.length === 0 && freeCourses.length === 0)
+              }
+              className="w-full rounded bg-primary py-3 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-60"
+            >
+              {checkoutMutation.isPending
+                ? t('checkout.processing')
+                : paidCourses.length > 0
+                  ? t('checkout.placeDemoOrder')
+                  : t('checkout.confirmFreeEnroll')}
+            </button>
+          )}
         </div>
       )}
     </div>

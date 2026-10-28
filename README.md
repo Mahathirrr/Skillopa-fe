@@ -54,6 +54,16 @@ VITE_API_URL= npm run build
 
 Output: `dist/`
 
+## E2E (Playwright)
+
+```bash
+npx playwright install chromium
+npm run test:e2e              # local base URL (default localhost:5173)
+npm run test:e2e:prod         # production smoke + login
+```
+
+Optional env for login test: `E2E_STUDENT_EMAIL`, `E2E_STUDENT_PASSWORD` (defaults to demo student in backend README).
+
 ## Production
 
 Static files served from `/opt/skillopa/frontend/dist` via nginx.

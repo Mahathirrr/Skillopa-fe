@@ -22,4 +22,4 @@
 
 **Decision:** Checkout UI labels payment confirm as platform demo (i18n keys `demoCheckout*`).
 
-**Why:** Matches backend demo payment flow; no fake “paid” UI without API call.
+**Why:** Matches backend demo payment flow: `createOrderCheckout` → `confirmOrder` on `/checkout`.

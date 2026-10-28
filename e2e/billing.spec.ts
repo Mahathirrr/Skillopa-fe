@@ -8,9 +8,14 @@ test.describe('Paid checkout', () => {
     const statusRes = await request.get(`${base}/payments/status`)
     expect(statusRes.ok()).toBeTruthy()
     const status = (await statusRes.json()) as {
+      enabled: boolean
+      sandbox: boolean
       provider: string
       demo_confirm_enabled: boolean
     }
+    expect(status.enabled).toBe(true)
+    expect(status.sandbox).toBe(true)
+    expect(status.provider).toBe('mayar')
 
     const student = await registerFreshStudent(request)
     const coursesRes = await request.get(`${base}/courses?limit=20`)
@@ -46,27 +51,18 @@ test.describe('Paid checkout', () => {
     }
     const orderId = checkout.order.id
 
-    if (status.provider === 'mayar') {
-      expect(checkout.payment_url?.length).toBeGreaterThan(8)
-      const sim = await request.post(`${base}/payments/sandbox/orders/${orderId}/simulate`, {
-        headers: { Authorization: `Bearer ${student.token}` },
-        timeout: 120_000,
-      })
-      expect(sim.ok()).toBeTruthy()
-      const sync = await request.post(`${base}/orders/${orderId}/sync`, {
-        headers: { Authorization: `Bearer ${student.token}` },
-      })
-      expect(sync.ok()).toBeTruthy()
-      const synced = (await sync.json()) as { order: { status: string } }
-      expect(synced.order.status).toBe('paid')
-    } else if (status.demo_confirm_enabled) {
-      const confirm = await request.post(`${base}/orders/${orderId}/confirm`, {
-        headers: { Authorization: `Bearer ${student.token}` },
-      })
-      expect(confirm.ok()).toBeTruthy()
-    } else {
-      test.fail(true, 'billing not configured')
-    }
+    expect(checkout.payment_url?.length).toBeGreaterThan(8)
+    const sim = await request.post(`${base}/payments/sandbox/orders/${orderId}/simulate`, {
+      headers: { Authorization: `Bearer ${student.token}` },
+      timeout: 120_000,
+    })
+    expect(sim.ok()).toBeTruthy()
+    const sync = await request.post(`${base}/orders/${orderId}/sync`, {
+      headers: { Authorization: `Bearer ${student.token}` },
+    })
+    expect(sync.ok()).toBeTruthy()
+    const synced = (await sync.json()) as { order: { status: string } }
+    expect(synced.order.status).toBe('paid')
 
     const after = await request.get(`${base}/enrollments`, {
       headers: { Authorization: `Bearer ${student.token}` },
@@ -78,7 +74,13 @@ test.describe('Paid checkout', () => {
   test('UI checkout completes to my-learning', async ({ page, request }) => {
     const base = apiBaseURL()
     const statusRes = await request.get(`${base}/payments/status`)
-    const status = (await statusRes.json()) as { provider: string; demo_confirm_enabled: boolean }
+    const status = (await statusRes.json()) as {
+      enabled: boolean
+      sandbox: boolean
+      provider: string
+    }
+    expect(status.enabled).toBe(true)
+    expect(status.provider).toBe('mayar')
 
     const student = await registerFreshStudent(request)
     await setAuthToken(page, student.token)
@@ -91,16 +93,11 @@ test.describe('Paid checkout', () => {
     await page.goto('/checkout')
     await expect(page.getByRole('heading', { name: /checkout/i })).toBeVisible()
 
-    if (status.provider === 'mayar') {
-      await page.getByRole('button', { name: /continue to mayar|lanjut ke pembayaran mayar/i }).click()
-      await expect(
-        page.getByRole('button', { name: /simulate sandbox|simulasi sandbox/i }),
-      ).toBeVisible({ timeout: 15_000 })
-      await page.getByRole('button', { name: /simulate sandbox|simulasi sandbox/i }).click()
-    } else {
-      await page.getByRole('button', { name: /place demo order|buat pesanan demo/i }).click()
-      await page.getByRole('button', { name: /confirm demo payment|konfirmasi pembayaran demo/i }).click()
-    }
+    await page.getByRole('button', { name: /continue to mayar|lanjut ke pembayaran mayar/i }).click()
+    await expect(
+      page.getByRole('button', { name: /simulate sandbox|simulasi sandbox/i }),
+    ).toBeVisible({ timeout: 15_000 })
+    await page.getByRole('button', { name: /simulate sandbox|simulasi sandbox/i }).click()
 
     await expect(page).toHaveURL(/\/my-learning/, { timeout: 120_000 })
   })

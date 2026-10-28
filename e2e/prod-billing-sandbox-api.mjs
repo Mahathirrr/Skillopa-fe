@@ -15,6 +15,9 @@ async function main() {
   const statusRes = await fetch(`${API_BASE}/payments/status`)
   const status = await statusRes.json()
   assert('payment status', statusRes.ok, status)
+  assert('billing enabled', status.enabled === true, status)
+  assert('billing sandbox', status.sandbox === true, status)
+  assert('provider mayar', status.provider === 'mayar', status)
 
   const loginRes = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
@@ -45,12 +48,6 @@ async function main() {
   }
   assert('find unenrolled paid course', courseId != null, { enrolledIds: [...enrolledIds] })
 
-  await fetch(`${API_BASE}/cart`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ course_id: courseId }),
-  })
-
   const checkoutRes = await fetch(`${API_BASE}/orders/checkout`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -58,36 +55,35 @@ async function main() {
   })
   const checkout = await checkoutRes.json()
   assert('checkout 201', checkoutRes.status === 201, checkout)
+  assert('payment url', typeof checkout.payment_url === 'string' && checkout.payment_url.length > 8, checkout)
   const orderId = checkout.order?.id
-  if (status.provider === 'mayar') {
-    assert('payment url', typeof checkout.payment_url === 'string' && checkout.payment_url.length > 8, checkout)
-  }
   assert('order id', !!orderId, checkout.order)
 
-  if (status.provider === 'mayar') {
-    const simRes = await fetch(`${API_BASE}/payments/sandbox/orders/${orderId}/simulate`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      signal: AbortSignal.timeout(120_000),
-    })
-    assert('simulate', simRes.ok, `${simRes.status} ${await simRes.text()}`)
+  const simRes = await fetch(`${API_BASE}/payments/sandbox/orders/${orderId}/simulate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(120_000),
+  })
+  const simBody = await simRes.text()
+  assert('simulate', simRes.ok, `${simRes.status} ${simBody}`)
 
-    const syncRes = await fetch(`${API_BASE}/orders/${orderId}/sync`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const synced = await syncRes.json()
-    assert('sync ok', syncRes.ok, syncRes.status)
-    assert('order paid', synced.order?.status === 'paid', synced.order)
-  } else {
-    const confirmRes = await fetch(`${API_BASE}/orders/${orderId}/confirm`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const confirmed = await confirmRes.json()
-    assert('demo confirm', confirmRes.ok, confirmRes.status)
-    assert('order paid', confirmed.order?.status === 'paid', confirmed.order)
-  }
+  const syncRes = await fetch(`${API_BASE}/orders/${orderId}/sync`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const synced = await syncRes.json()
+  assert('sync ok', syncRes.ok, syncRes.status)
+  assert('order paid', synced.order?.status === 'paid', synced.order)
+
+  const after = await fetch(`${API_BASE}/enrollments`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const afterBody = await after.json()
+  assert(
+    'enrollment active',
+    (afterBody.enrollments ?? []).some((e) => e.course_id === courseId),
+    afterBody,
+  )
 
   console.log('\nSkillopa billing sandbox API smoke LULUS.')
 }

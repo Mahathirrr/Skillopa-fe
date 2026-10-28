@@ -155,3 +155,20 @@ html.lenis-scrolling.lenis [data-lenis-prevent] {
 .landing-hero-in-delay-3 {
   animation-delay: 0.36s;
 }
+
+.certificate-document__course {
+  letter-spacing: -0.03em;
+}
+
+.certificate-document__name {
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman', serif;
+  letter-spacing: -0.02em;
+}
+
+/* html-to-image menghormati px lebih konsisten daripada % + h-full pada watermark */
+.certificate-document__watermark {
+  width: min(34%, 260px);
+  max-height: 38%;
+  height: auto;
+}
+

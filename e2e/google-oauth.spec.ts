@@ -19,6 +19,9 @@ test.describe('Google OAuth', () => {
     const loc = res.headers()['location'] ?? ''
     expect(loc).toMatch(/accounts\.google\.com/)
     expect(loc).toContain('client_id=')
+    const stateMatch = loc.match(/state=([^&]+)/)
+    expect(stateMatch?.[1]).toBeTruthy()
+    expect(decodeURIComponent(stateMatch![1]!)).toMatch(/^[a-f0-9]{32}\.[a-f0-9]{64}$/)
     const cookies = res.headers()['set-cookie'] ?? ''
     expect(cookies).toMatch(/oauth_state=/)
   })

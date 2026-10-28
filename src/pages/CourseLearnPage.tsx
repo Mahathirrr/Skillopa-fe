@@ -19,6 +19,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { YouTubePlayer } from '@/components/YouTubePlayer'
 import { YouTubeThumbnail } from '@/components/YouTubeThumbnail'
+import { LectureDiscussionPanel } from '@/components/LectureDiscussionPanel'
 import { QuestionThread } from '@/components/QuestionThread'
 import type { Lecture, Section } from '@/lib/api'
 import { api, mediaUrl, resolveLectureVideoSrc } from '@/lib/api'
@@ -258,11 +259,14 @@ function QAPanel({ courseId, lectureId, token, isAuthenticated }: { courseId: nu
         </form>
       )}
       {questions.length === 0 ? (
-        <p className="text-sm text-muted">No questions yet.</p>
+        <p className="text-sm text-muted">Belum ada pertanyaan.</p>
       ) : (
         questions.map((q) => (
           <QuestionThread key={q.id} question={q} token={token} isAuthenticated={isAuthenticated} />
         ))
+      )}
+      {lectureId && (
+        <LectureDiscussionPanel lectureId={lectureId} token={token} />
       )}
     </div>
   )

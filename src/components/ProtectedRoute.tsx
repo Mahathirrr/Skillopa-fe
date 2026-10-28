@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useAuthStore } from '@/stores/auth'
 
 type Props = {
@@ -8,8 +9,16 @@ type Props = {
 }
 
 export function ProtectedRoute({ instructor, admin }: Props) {
-  const { isAuthenticated, isInstructor, isAdmin } = useAuthStore()
+  const { isAuthenticated, isInstructor, isAdmin, authHydrated } = useAuthStore()
   const location = useLocation()
+
+  if (!authHydrated) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />

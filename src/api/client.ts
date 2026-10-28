@@ -24,6 +24,7 @@ type RequestOptions = {
   body?: unknown
   token?: string | null
   formData?: FormData
+  credentials?: RequestCredentials
 }
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -34,6 +35,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   const res = await fetch(`${API_URL}${path}`, {
     method: options.method || 'GET',
     headers,
+    credentials: options.credentials ?? 'same-origin',
     body: options.formData ?? (options.body ? JSON.stringify(options.body) : undefined),
   })
 

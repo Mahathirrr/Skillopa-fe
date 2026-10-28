@@ -4,6 +4,7 @@ import type {
   AuditEvent,
   Course,
   Refund,
+  ReviewReport,
   User,
 } from '@/api/types'
 
@@ -67,5 +68,21 @@ export const adminApi = {
       body: { reason },
       token,
     })
+  },
+
+  listReviewReports(token: string, params?: { limit?: number; offset?: number }) {
+    const search = new URLSearchParams()
+    if (params?.limit) search.set('limit', String(params.limit))
+    if (params?.offset) search.set('offset', String(params.offset))
+    const qs = search.toString()
+    return request<{ reports: ReviewReport[] }>(`/admin/review-reports${qs ? `?${qs}` : ''}`, { token })
+  },
+
+  adminHideReview(token: string, reviewId: number) {
+    return request<{ message: string }>(`/admin/reviews/${reviewId}/hide`, { method: 'POST', token })
+  },
+
+  adminRestoreReview(token: string, reviewId: number) {
+    return request<{ message: string }>(`/admin/reviews/${reviewId}/restore`, { method: 'POST', token })
   },
 }

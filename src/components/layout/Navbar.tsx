@@ -20,9 +20,12 @@ import { NavbarSearch } from '@/components/layout/NavbarSearch'
 import { SkillopaLogo } from '@/components/SkillopaLogo'
 import { api } from '@/lib/api'
 import { setAppLocale } from '@/i18n'
+import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
-export function Navbar() {
+type NavbarProps = { className?: string }
+
+export function Navbar({ className }: NavbarProps) {
   const { isAuthenticated, isInstructor, isAdmin, user, token, logout } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
@@ -117,7 +120,7 @@ export function Navbar() {
   )
 
   return (
-    <header className="sticky top-0 z-50 border-b border-dark-muted bg-dark text-white">
+    <header className={cn('sticky top-0 z-50 border-b border-dark-muted bg-dark text-white', className)}>
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 lg:px-6">
         <Link to="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
           <SkillopaLogo className="h-7 w-7" />

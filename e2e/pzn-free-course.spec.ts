@@ -30,9 +30,9 @@ test.describe('Kursus gratis PZN (15 video)', () => {
 
     for (let i = 0; i < lectures.length; i++) {
       const lec = lectures[i]!
-      await page.getByRole('button', { name: lec.title, exact: false }).click()
-      const play = page.getByRole('button', { name: /Putar/i }).first()
-      await expect(play).toBeVisible({ timeout: 10_000 })
+      await page.locator('button.pl-6').filter({ hasText: lec.title }).click()
+      const play = page.getByRole('button', { name: `Putar ${lec.title}` })
+      await expect(play).toBeVisible({ timeout: 20_000 })
       await play.click()
       await expect(page.locator('iframe').first()).toBeVisible({ timeout: 25_000 })
       const mark = await request.put(`${apiBaseURL()}/enrollments/${courseId}/progress`, {

@@ -93,4 +93,23 @@ export const communityApi = {
   markAllNotificationsRead(token: string) {
     return request<{ message: string }>('/notifications/read-all', { method: 'POST', token })
   },
+
+  listLectureDiscussion(lectureId: number, token: string, cursor?: string) {
+    const qs = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
+    return request<{ comments: import('@/api/types').LectureDiscussionComment[]; next_cursor?: string }>(
+      `/lectures/${lectureId}/discussion${qs}`,
+      { token },
+    )
+  },
+
+  createLectureDiscussionComment(
+    lectureId: number,
+    token: string,
+    data: { body: string; parent_id?: number; video_timestamp_seconds?: number },
+  ) {
+    return request<{ comment: import('@/api/types').LectureDiscussionComment }>(
+      `/lectures/${lectureId}/discussion`,
+      { method: 'POST', body: data, token },
+    )
+  },
 }

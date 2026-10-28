@@ -69,4 +69,27 @@ export const authApi = {
     const q = referralCode ? `?referral_code=${encodeURIComponent(referralCode)}` : ''
     return `${API_URL}/auth/google/start${q}`
   },
+
+  /** Tukar cookie oauth_finish (setelah redirect Google/GitHub) menjadi sesi JWT. */
+  oauthFinish() {
+    return request<AuthResponse>('/auth/oauth/finish', { credentials: 'include' })
+  },
+
+  passwordResetStatus() {
+    return request<{ enabled: boolean }>('/auth/password-reset/status')
+  },
+
+  requestPasswordReset(email: string) {
+    return request<{ message: string }>('/auth/password-reset/request', {
+      method: 'POST',
+      body: { email },
+    })
+  },
+
+  confirmPasswordReset(token: string, newPassword: string) {
+    return request<{ message: string }>('/auth/password-reset/confirm', {
+      method: 'POST',
+      body: { token, new_password: newPassword },
+    })
+  },
 }

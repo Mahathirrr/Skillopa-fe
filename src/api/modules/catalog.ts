@@ -8,6 +8,7 @@ import type {
   CourseTranslation,
   PublicStats,
   Review,
+  ReviewListResponse,
 } from '@/api/types'
 
 export const catalogApi = {
@@ -42,8 +43,25 @@ export const catalogApi = {
     return request<CourseDetailResponse>(`/courses/${id}`, { token })
   },
 
-  listCourseReviews(courseId: number) {
-    return request<{ reviews: Review[] }>(`/courses/${courseId}/reviews`)
+  listCourseReviews(
+    courseId: number,
+    opts?: { sort?: string; rating?: number; cursor?: string; limit?: number; token?: string | null },
+  ) {
+    const qs = new URLSearchParams()
+    if (opts?.sort) qs.set('sort', opts.sort)
+    if (opts?.rating) qs.set('rating', String(opts.rating))
+    if (opts?.cursor) qs.set('cursor', opts.cursor)
+    if (opts?.limit) qs.set('limit', String(opts.limit))
+    const q = qs.toString()
+    return request<ReviewListResponse>(`/courses/${courseId}/reviews${q ? `?${q}` : ''}`, { token: opts?.token })
+  },
+
+  reportReview(token: string, reviewId: number, reason: string) {
+    return request<{ message: string }>(`/reviews/${reviewId}/report`, {
+      method: 'POST',
+      body: { reason },
+      token,
+    })
   },
 
   voteReviewHelpful(token: string, reviewId: number) {

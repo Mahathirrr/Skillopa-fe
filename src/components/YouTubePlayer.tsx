@@ -36,6 +36,19 @@ export function YouTubePlayer({
   const lastSaved = useRef(0)
   const reportedError = useRef(false)
 
+  const destroyPlayer = useCallback(() => {
+    playerRef.current?.destroy()
+    playerRef.current = null
+  }, [])
+
+  useEffect(() => {
+    setActive(false)
+    setErrorMsg(null)
+    setThumbVideoId(null)
+    reportedError.current = false
+    destroyPlayer()
+  }, [lectureId, destroyPlayer])
+
   useEffect(() => {
     let cancelled = false
     void (async () => {
@@ -57,11 +70,6 @@ export function YouTubePlayer({
       cancelled = true
     }
   }, [lectureId, token, isPreview])
-
-  const destroyPlayer = useCallback(() => {
-    playerRef.current?.destroy()
-    playerRef.current = null
-  }, [])
 
   useEffect(() => () => destroyPlayer(), [destroyPlayer])
 

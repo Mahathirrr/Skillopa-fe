@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, Clock, Gift, Globe, Play, ShoppingCart, ThumbsUp, User } from 'lucide-react'
+import { CheckCircle, Clock, Gift, Globe, Play, ShoppingCart, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { PreviewLecturePlayer } from '@/components/PreviewLecturePlayer'
+import { CourseReviewsSection } from '@/components/CourseReviewsSection'
 import { QuestionThread } from '@/components/QuestionThread'
 import { StarRating } from '@/components/StarRating'
 import { api, mediaUrl, type Lecture } from '@/lib/api'
@@ -19,15 +20,10 @@ export function CourseDetailPage() {
   const queryClient = useQueryClient()
   const { token, isAuthenticated, user } = useAuthStore()
 
-  const [reviewRating, setReviewRating] = useState(5)
-  const [reviewComment, setReviewComment] = useState('')
   const [actionMsg, setActionMsg] = useState('')
   const [previewLecture, setPreviewLecture] = useState<Lecture | null>(null)
   const previewPlayerRef = useRef<HTMLElement>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'qa' | 'translations'>('overview')
-  const [editingReviewId, setEditingReviewId] = useState<number | null>(null)
-  const [editRating, setEditRating] = useState(5)
-  const [editComment, setEditComment] = useState('')
   const { t } = useTranslation()
 
   const { data, isLoading, error } = useQuery({
@@ -39,12 +35,6 @@ export function CourseDetailPage() {
   const course = data?.course
   const curriculum = data?.curriculum ?? []
 
-  const { data: reviewsData } = useQuery({
-    queryKey: ['reviews', course?.id],
-    queryFn: () => api.listCourseReviews(course!.id),
-    enabled: !!course?.id,
-  })
-
   const { data: instructorData } = useQuery({
     queryKey: ['instructor-profile', course?.instructor_id],
     queryFn: () => api.getInstructorProfile(course!.instructor_id),
@@ -53,8 +43,8 @@ export function CourseDetailPage() {
 
   const { data: questionsData, isLoading: questionsLoading } = useQuery({
     queryKey: ['questions', course?.id],
-    queryFn: () => api.listCourseQuestions(course!.id),
-    enabled: !!course?.id,
+    queryFn: () => api.listCourseQuestions(course!.id, undefined, token),
+    enabled: !!course?.id && isAuthenticated && !!token,
   })
 
   const { data: enrollmentsData } = useQuery({
@@ -69,11 +59,17 @@ export function CourseDetailPage() {
     enabled: !!course?.id && activeTab === 'translations',
   })
 
-  const reviews = reviewsData?.reviews ?? []
   const instructor = instructorData?.instructor
   const questions = questionsData?.questions ?? []
   const translations = translationsData?.translations ?? []
-  const isEnrolled = enrollmentsData?.enrollments?.some((e) => e.course_id === course?.id) ?? false
+  const enrollment = enrollmentsData?.enrollments?.find((e) => e.course_id === course?.id)
+  const isEnrolled = !!enrollment
+  const enrollmentProgress = enrollment?.progress_percent ?? 0
+  const canReview =
+    isEnrolled &&
+    isAuthenticated &&
+    user?.id !== course?.instructor_id &&
+    enrollmentProgress >= 20
 
   const previewLectures = curriculum.flatMap((s) =>
     (s.lectures ?? []).filter((l) => l.is_preview),
@@ -125,39 +121,10 @@ export function CourseDetailPage() {
     onError: (e) => setActionMsg(e instanceof ApiError ? e.message : 'Failed to add to wishlist'),
   })
 
-  const reviewMutation = useMutation({
-    mutationFn: () => api.createReview(token!, course!.id, reviewRating, reviewComment),
-    onSuccess: () => {
-      setReviewComment('')
-      queryClient.invalidateQueries({ queryKey: ['reviews', course!.id] })
-      setActionMsg('Review submitted')
-    },
-    onError: (e) => setActionMsg(e instanceof ApiError ? e.message : 'Review failed'),
-  })
-
-  const helpfulMutation = useMutation({
-    mutationFn: (reviewId: number) => api.voteReviewHelpful(token!, reviewId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reviews', course!.id] }),
-  })
-
   const questionMutation = useMutation({
     mutationFn: ({ title, body }: { title: string; body: string }) =>
       api.createQuestion(token!, course!.id, { title, body }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions', course!.id] }),
-  })
-
-  const updateReviewMutation = useMutation({
-    mutationFn: ({ id, rating, comment }: { id: number; rating: number; comment: string }) =>
-      api.updateReview(token!, id, rating, comment),
-    onSuccess: () => {
-      setEditingReviewId(null)
-      queryClient.invalidateQueries({ queryKey: ['reviews', course!.id] })
-    },
-  })
-
-  const deleteReviewMutation = useMutation({
-    mutationFn: (id: number) => api.deleteReview(token!, id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reviews', course!.id] }),
   })
 
   if (isLoading) return <LoadingSpinner />
@@ -184,8 +151,27 @@ export function CourseDetailPage() {
     }
   }
 
+  const jsonLd =
+    course && course.rating_count > 0
+      ? JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Course',
+          name: course.title,
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: course.rating_avg.toFixed(1),
+            ratingCount: course.rating_count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        })
+      : null
+
   return (
     <div>
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
+      )}
       <section className="bg-dark text-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[1fr_380px] lg:px-6">
           <div>
@@ -193,7 +179,11 @@ export function CourseDetailPage() {
             <h1 className="mb-3 text-3xl font-bold lg:text-4xl">{course.title}</h1>
             {course.subtitle && <p className="mb-4 text-lg text-white/80">{course.subtitle}</p>}
             <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
-              <StarRating rating={course.rating_avg} count={course.rating_count} />
+              {course.rating_count > 0 ? (
+                <StarRating rating={course.rating_avg} count={course.rating_count} showEmpty={false} />
+              ) : (
+                <span className="text-white/70">{t('course.noReviewsYet')}</span>
+              )}
               <span>{course.enrollment_count?.toLocaleString() ?? 0} students</span>
               {course.instructor_name && (
                 <span>Created by {course.instructor_name}</span>
@@ -408,158 +398,16 @@ export function CourseDetailPage() {
                 </div>
               </section>
 
-              <section>
-                <h2 className="mb-4 text-2xl font-bold">Student reviews</h2>
-                {reviews.length === 0 ? (
-                  <p className="text-muted">No reviews yet.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {reviews.map((r) => (
-                      <div key={r.id} className="rounded border border-border bg-surface p-4">
-                        <div className="mb-2 flex items-center gap-2">
-                          <StarRating rating={r.rating} />
-                          <span className="text-sm font-semibold">{r.user_name}</span>
-                        </div>
-                        <p className="mb-3 text-sm text-muted">{r.comment}</p>
-                        {r.instructor_response && (
-                          <div className="mb-3 rounded bg-bg p-3 text-sm">
-                            <p className="mb-1 font-semibold text-primary">Instructor response</p>
-                            <p className="text-muted">{r.instructor_response}</p>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-3">
-                          {isAuthenticated && (
-                            <button
-                              type="button"
-                              onClick={() => helpfulMutation.mutate(r.id)}
-                              disabled={helpfulMutation.isPending || r.user_voted_helpful}
-                              className={`flex items-center gap-1 text-xs ${
-                                r.user_voted_helpful ? 'font-bold text-primary' : 'text-muted hover:text-primary'
-                              }`}
-                            >
-                              <ThumbsUp className="h-3.5 w-3.5" />
-                              Helpful ({r.helpful_count ?? 0})
-                            </button>
-                          )}
-                          {isAuthenticated && user?.id === r.user_id && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setEditingReviewId(r.id)
-                                  setEditRating(r.rating)
-                                  setEditComment(r.comment)
-                                }}
-                                className="text-xs text-primary hover:underline"
-                              >
-                                {t('course.editReview')}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (confirm(t('course.confirmDeleteReview'))) {
-                                    deleteReviewMutation.mutate(r.id)
-                                  }
-                                }}
-                                className="text-xs text-red-600 hover:underline"
-                              >
-                                {t('course.deleteReview')}
-                              </button>
-                            </>
-                          )}
-                          {!isAuthenticated && (r.helpful_count ?? 0) > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-muted">
-                              <ThumbsUp className="h-3.5 w-3.5" />
-                              {r.helpful_count} found helpful
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {isAuthenticated && (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      reviewMutation.mutate()
-                    }}
-                    className="mt-6 rounded border border-border bg-surface p-4"
-                  >
-                    <h3 className="mb-3 font-semibold">Leave a review</h3>
-                    <div className="mb-3 flex items-center gap-2">
-                      <label htmlFor="rating" className="text-sm">Rating</label>
-                      <select
-                        id="rating"
-                        value={reviewRating}
-                        onChange={(e) => setReviewRating(Number(e.target.value))}
-                        className="rounded border border-border px-2 py-1"
-                      >
-                        {[5, 4, 3, 2, 1].map((n) => (
-                          <option key={n} value={n}>{n} stars</option>
-                        ))}
-                      </select>
-                    </div>
-                    <textarea
-                      value={reviewComment}
-                      onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder="Share your experience..."
-                      rows={3}
-                      className="mb-3 w-full rounded border border-border px-3 py-2 outline-none focus:border-primary"
-                    />
-                    <button
-                      type="submit"
-                      disabled={reviewMutation.isPending}
-                      className="rounded bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-dark"
-                    >
-                      Submit review
-                    </button>
-                  </form>
-                )}
-                {editingReviewId && (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      updateReviewMutation.mutate({
-                        id: editingReviewId,
-                        rating: editRating,
-                        comment: editComment,
-                      })
-                    }}
-                    className="mt-4 rounded border border-primary bg-primary/5 p-4"
-                  >
-                    <h3 className="mb-3 font-semibold">{t('course.editReview')}</h3>
-                    <select
-                      value={editRating}
-                      onChange={(e) => setEditRating(Number(e.target.value))}
-                      className="mb-3 rounded border border-border px-2 py-1"
-                    >
-                      {[5, 4, 3, 2, 1].map((n) => (
-                        <option key={n} value={n}>{n} stars</option>
-                      ))}
-                    </select>
-                    <textarea
-                      value={editComment}
-                      onChange={(e) => setEditComment(e.target.value)}
-                      rows={3}
-                      className="mb-3 w-full rounded border border-border px-3 py-2 outline-none focus:border-primary"
-                    />
-                    <div className="flex gap-2">
-                      <button type="submit" className="rounded bg-primary px-4 py-2 text-sm font-bold text-white">
-                        {t('course.saveReview')}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingReviewId(null)}
-                        className="rounded border border-border px-4 py-2 text-sm"
-                      >
-                        {t('common.cancel')}
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </section>
+              {course && (
+                <CourseReviewsSection
+                  courseId={course.id}
+                  token={token}
+                  isAuthenticated={isAuthenticated}
+                  canReview={canReview}
+                  currentUserId={user?.id}
+                  enrollmentProgress={enrollmentProgress}
+                />
+              )}
             </>
           ) : activeTab === 'qa' ? (
             <section>
@@ -599,19 +447,22 @@ export function CourseDetailPage() {
                   </button>
                 </form>
               )}
-              {questions.length === 0 ? (
-                <p className="text-muted">No questions yet. Be the first to ask!</p>
-              ) : (
+              {!isAuthenticated && (
+                <p className="mb-4 text-sm text-muted">Masuk dan daftar kursus untuk melihat diskusi Q&amp;A.</p>
+              )}
+              {isAuthenticated && questions.length === 0 ? (
+                <p className="text-muted">Belum ada pertanyaan.</p>
+              ) : isAuthenticated ? (
                 <div className="space-y-4">
                   {questions.map((q) => (
                     <QuestionThread key={q.id} question={q} token={token} isAuthenticated={isAuthenticated} />
                   ))}
                 </div>
-              )}
+              ) : null}
             </section>
           ) : (
             <section>
-              <h2 className="mb-4 text-2xl font-bold">{t('course.translations')}</h2>
+              <h2 className="mb-2 text-2xl font-bold">{t('course.translations')}</h2>
               {translations.length === 0 ? (
                 <p className="text-muted">No translations available for this course.</p>
               ) : (

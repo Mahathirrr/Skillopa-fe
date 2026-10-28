@@ -56,7 +56,11 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
         {course.instructor_name && (
           <p className="text-xs text-muted">{course.instructor_name}</p>
         )}
-        <StarRating rating={course.rating_avg || 0} count={course.rating_count} />
+        {course.rating_count > 0 ? (
+          <StarRating rating={course.rating_avg} count={course.rating_count} />
+        ) : (
+          <span className="text-xs text-muted">Belum ada ulasan</span>
+        )}
         <div className="mt-auto flex items-center justify-between pt-1">
           <span className="text-base font-bold text-ink">
             {formatPrice(course.price, course.is_free)}

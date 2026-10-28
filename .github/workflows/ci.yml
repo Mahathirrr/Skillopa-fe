@@ -30,6 +30,15 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npx playwright install chromium
+      - name: Install poppler (pdftoppm untuk banding PDF sertifikat)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Auth & OAuth (prod)
+        run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/auth.spec.ts e2e/google-oauth.spec.ts e2e/oauth-callback.spec.ts e2e/forgot-password.spec.ts e2e/legal-pages.spec.ts --reporter=line
+      - name: Reviews API (prod)
+        run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id E2E_FREE_COURSE_SLUG=belajar-web-pzn-gratis npx playwright test e2e/reviews.spec.ts e2e/reviews-ui.spec.ts e2e/admin-reviews-api.spec.ts --reporter=line
+      - name: Sertifikat PDF vs web (prod)
+        run: PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id npx playwright test e2e/certificate-download.spec.ts e2e/certificate-share.spec.ts --reporter=line
       - name: billing smoke (retry network)
         run: |
           for attempt in 1 2 3 4 5; do

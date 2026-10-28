@@ -37,7 +37,7 @@ export async function loginOnPage(page: Page, email: string, password: string) {
   await page.getByLabel(/email/i).fill(email)
   await page.getByLabel(/password/i).fill(password)
   await page.getByRole('button', { name: /log in|masuk/i }).click()
-  await page.waitForURL(/\/(my-learning|courses)/, { timeout: 15_000 })
+  await page.waitForURL(/\/(my-learning|courses|instructor|admin)/, { timeout: 15_000 })
 }
 
 export async function setAuthToken(page: Page, token: string) {

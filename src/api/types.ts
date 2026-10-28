@@ -62,6 +62,11 @@ export type Course = {
   total_duration_minutes?: number
   rating_avg: number
   rating_count: number
+  rating_star_1?: number
+  rating_star_2?: number
+  rating_star_3?: number
+  rating_star_4?: number
+  rating_star_5?: number
   enrollment_count?: number
   instructor_name?: string
   category_name?: string
@@ -109,8 +114,56 @@ export type Review = {
   instructor_response?: string
   responded_at?: string
   created_at?: string
+  updated_at?: string
+  edited?: boolean
+  verified_purchaser?: boolean
   user_name?: string
+  user_avatar_url?: string
   user_voted_helpful?: boolean
+}
+
+export type ReviewListMeta = {
+  next_cursor?: string
+  total_visible: number
+  rating_avg: number
+  rating_count: number
+  rating_star_1: number
+  rating_star_2: number
+  rating_star_3: number
+  rating_star_4: number
+  rating_star_5: number
+}
+
+export type ReviewListResponse = {
+  reviews: Review[]
+  meta: ReviewListMeta
+}
+
+export type ReviewReport = {
+  id: number
+  review_id: number
+  reporter_user_id: number
+  reason: string
+  status: string
+  created_at?: string
+  course_title?: string
+  review_comment?: string
+  reporter_name?: string
+}
+
+export type LectureDiscussionComment = {
+  id: number
+  lecture_id: number
+  course_id: number
+  user_id: number
+  parent_id?: number | null
+  body: string
+  video_timestamp_seconds?: number | null
+  created_at?: string
+  user_name?: string
+  user_avatar_url?: string
+  reply_count?: number
+  is_instructor?: boolean
 }
 
 export type Enrollment = {
@@ -143,6 +196,9 @@ export type Certificate = {
   issued_at: string
   course_title?: string
   user_name?: string
+  instructor_name?: string
+  total_duration_minutes?: number
+  completed_at?: string | null
 }
 
 export type CertificateVerifyResponse = {

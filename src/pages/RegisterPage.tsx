@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { AuthShell } from '@/components/AuthShell'
+import { GoogleSignInButton } from '@/components/GoogleSignInButton'
 import { useAuthStore } from '@/stores/auth'
 
 export function RegisterPage() {
@@ -42,6 +43,15 @@ export function RegisterPage() {
           {t('auth.referralApplied')}: <strong>{refCode}</strong>
         </p>
       )}
+
+      <div className="mb-4 space-y-3">
+        <GoogleSignInButton referralCode={refCode || undefined} />
+        <div className="flex items-center gap-3 text-xs text-muted">
+          <span className="h-px flex-1 bg-border" />
+          <span>{t('auth.orEmail')}</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

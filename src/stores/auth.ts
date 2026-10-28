@@ -19,6 +19,7 @@ type AuthState = {
   init: () => Promise<void>
   fetchMe: () => Promise<void>
   setUser: (user: User) => void
+  completeOAuth: (token: string) => Promise<string>
 }
 
 function redirectPathForRole(role: UserRole): string {
@@ -111,6 +112,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isInstructor: user.role === 'instructor' || user.role === 'admin',
       isAdmin: user.role === 'admin',
     })
+  },
+
+  async completeOAuth(token) {
+    set({ loading: true, error: '' })
+    try {
+      localStorage.setItem(TOKEN_KEY, token)
+      const res = await api.me(token)
+      set({
+        token,
+        user: res.user,
+        isAuthenticated: true,
+        isInstructor: res.user.role === 'instructor' || res.user.role === 'admin',
+        isAdmin: res.user.role === 'admin',
+      })
+      return redirectPathForRole(res.user.role)
+    } catch (e) {
+      localStorage.removeItem(TOKEN_KEY)
+      set({ token: null, isAuthenticated: false })
+      throw e
+    } finally {
+      set({ loading: false })
+    }
   },
 }))
 

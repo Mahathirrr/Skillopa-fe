@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { AuthShell } from '@/components/AuthShell'
+import { GoogleSignInButton } from '@/components/GoogleSignInButton'
 import { useAuthStore } from '@/stores/auth'
 
 export function LoginPage() {
@@ -11,10 +12,12 @@ export function LoginPage() {
   const location = useLocation()
   const { t } = useTranslation()
   const from = (location.state as { from?: string } | null)?.from ?? '/my-learning'
+  const [searchParams] = useSearchParams()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [localError, setLocalError] = useState('')
+  const oauthFailed = searchParams.get('oauth_error') === '1'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,9 +42,20 @@ export function LoginPage() {
         </>
       }
     >
-      {(error || localError) && (
-        <p className="mb-4 text-sm text-red-600">{error || localError}</p>
+      {(error || localError || oauthFailed) && (
+        <p className="mb-4 text-sm text-red-600">
+          {error || localError || (oauthFailed ? t('auth.oauthFailed') : '')}
+        </p>
       )}
+
+      <div className="mb-4 space-y-3">
+        <GoogleSignInButton />
+        <div className="flex items-center gap-3 text-xs text-muted">
+          <span className="h-px flex-1 bg-border" />
+          <span>{t('auth.orEmail')}</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

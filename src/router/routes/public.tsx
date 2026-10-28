@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom'
 import type { RouteObject } from 'react-router-dom'
 
 import { lazyPage } from '@/router/lazy'
@@ -14,6 +13,9 @@ const CertificateVerifyPage = lazyPage(() =>
 )
 const LoginPage = lazyPage(() => import('@/pages/LoginPage').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazyPage(() => import('@/pages/RegisterPage').then((m) => ({ default: m.RegisterPage })))
+const AuthCallbackPage = lazyPage(() =>
+  import('@/pages/AuthCallbackPage').then((m) => ({ default: m.AuthCallbackPage })),
+)
 const PaymentSuccessPage = lazyPage(() =>
   import('@/pages/PaymentSuccessPage').then((m) => ({ default: m.PaymentSuccessPage })),
 )
@@ -26,6 +28,6 @@ export const publicRoutes: RouteObject[] = [
   { path: 'certificates/verify/:code', element: <CertificateVerifyPage /> },
   { path: 'login', element: <LoginPage /> },
   { path: 'register', element: <RegisterPage /> },
-  { path: 'auth/callback', element: <Navigate to="/login" replace /> },
+  { path: 'auth/callback', element: <AuthCallbackPage /> },
   { path: 'payment/success', element: <PaymentSuccessPage /> },
 ]

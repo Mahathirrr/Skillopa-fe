@@ -220,6 +220,7 @@
   },
   "auth": {
     "referralApplied": "Referral code applied",
+    "orEmail": "or continue with email",
     "oauthGoogle": "Continue with Google",
     "oauthGithub": "Continue with GitHub",
     "orEmail": "or continue with email",

@@ -219,6 +219,7 @@
   },
   "auth": {
     "referralApplied": "Kode referral diterapkan",
+    "orEmail": "atau lanjut dengan email",
     "oauthGoogle": "Lanjutkan dengan Google",
     "oauthGithub": "Lanjutkan dengan GitHub",
     "orEmail": "atau lanjutkan dengan email",

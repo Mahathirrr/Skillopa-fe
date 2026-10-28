@@ -1,4 +1,4 @@
-import { request } from '@/api/client'
+import { API_ORIGIN, request } from '@/api/client'
 import type {
   AuthResponse,
   InstructorProfile,
@@ -59,5 +59,14 @@ export const authApi = {
 
   promoteToInstructor(token: string, userId: number) {
     return request<{ user: User }>(`/users/${userId}/promote`, { method: 'POST', token })
+  },
+
+  googleAuthStatus() {
+    return request<{ enabled: boolean; url: string }>('/auth/google/status')
+  },
+
+  googleAuthStartUrl(referralCode?: string) {
+    const q = referralCode ? `?referral_code=${encodeURIComponent(referralCode)}` : ''
+    return `${API_ORIGIN}/api/auth/google/start${q}`
   },
 }

@@ -101,7 +101,7 @@ export const learningApi = {
   },
 
   getLecturePlayback(lectureId: number, token?: string | null) {
-    return request<{ provider: string; video_id: string; start_seconds: number; origin: string }>(
+    return request<{ provider: string; video_id: string; start_seconds: number; end_seconds?: number; origin: string }>(
       `/lectures/${lectureId}/playback`,
       { token: token ?? undefined },
     )

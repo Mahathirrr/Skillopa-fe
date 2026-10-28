@@ -8,6 +8,7 @@ type Props = {
   lectureId: number
   title: string
   token?: string | null
+  isPreview?: boolean
   resumeSeconds?: number
   onSavePosition?: (seconds: number) => void
   onDuration?: (seconds: number) => void
@@ -20,6 +21,7 @@ export function YouTubePlayer({
   lectureId,
   title,
   token,
+  isPreview = false,
   resumeSeconds = 0,
   onSavePosition,
   onDuration,
@@ -42,13 +44,19 @@ export function YouTubePlayer({
         if (cancelled) return
         setThumbVideoId(playback.video_id)
       } catch {
-        if (!cancelled) setErrorMsg('Video tidak tersedia. Pastikan Anda terdaftar di kursus ini.')
+        if (!cancelled) {
+          setErrorMsg(
+            isPreview
+              ? 'Preview video tidak dapat dimuat.'
+              : 'Video tidak tersedia. Daftar kursus untuk menonton.',
+          )
+        }
       }
     })()
     return () => {
       cancelled = true
     }
-  }, [lectureId, token])
+  }, [lectureId, token, isPreview])
 
   const destroyPlayer = useCallback(() => {
     playerRef.current?.destroy()
@@ -68,6 +76,7 @@ export function YouTubePlayer({
         return
       }
       const start = resumeSeconds > 0 ? resumeSeconds : playback.start_seconds
+      const endCap = playback.end_seconds ?? 0
       destroyPlayer()
       const el = document.getElementById(`yt-player-${mountId}`)
       if (!el) return
@@ -84,18 +93,29 @@ export function YouTubePlayer({
         },
         events: {
           onReady: (e) => {
-            const d = Math.floor(e.target.getDuration())
-            if (d > 0 && token) {
-              void api.setLectureDuration(token, lectureId, d).catch(() => {})
-              onDuration?.(d)
+            const full = Math.floor(e.target.getDuration())
+            let segLen = full
+            if (endCap > start && endCap > 0) {
+              segLen = endCap - start
+            }
+            if (segLen > 0 && token && !isPreview) {
+              void api.setLectureDuration(token, lectureId, segLen).catch(() => {})
+              onDuration?.(segLen)
             }
             if (start > 0) {
               e.target.seekTo?.(start, true)
             }
           },
           onStateChange: (e) => {
-            if (e.data === 0 && playerRef.current && onSavePosition) {
-              onSavePosition(Math.floor(playerRef.current.getCurrentTime()))
+            if (!playerRef.current) return
+            const t = Math.floor(playerRef.current.getCurrentTime())
+            if (endCap > start && t >= endCap) {
+              playerRef.current.pauseVideo?.()
+              if (onSavePosition) onSavePosition(endCap)
+              return
+            }
+            if (e.data === 0 && onSavePosition) {
+              onSavePosition(t)
             }
           },
           onError: (e) => {
@@ -118,6 +138,11 @@ export function YouTubePlayer({
       const tick = window.setInterval(() => {
         if (!playerRef.current || !onSavePosition) return
         const sec = Math.floor(playerRef.current.getCurrentTime())
+        if (endCap > start && sec >= endCap) {
+          playerRef.current.pauseVideo?.()
+          onSavePosition(endCap)
+          return
+        }
         if (sec - lastSaved.current >= 8) {
           lastSaved.current = sec
           onSavePosition(sec)

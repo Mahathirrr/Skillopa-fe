@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { UploadField } from '@/components/UploadField'
 import { api } from '@/lib/api'
+import { partsToPayload, type SegmentPart } from '@/lib/youtube-time'
 import { useAuthStore } from '@/stores/auth'
 
 export function CurriculumBuilderPage() {
@@ -18,6 +19,9 @@ export function CurriculumBuilderPage() {
 
   const [sectionTitle, setSectionTitle] = useState('')
   const [bulkLinks, setBulkLinks] = useState<Record<number, string>>({})
+  const [segmentUrl, setSegmentUrl] = useState<Record<number, string>>({})
+  const [segmentParts, setSegmentParts] = useState<Record<number, SegmentPart[]>>({})
+  const [segmentPreview, setSegmentPreview] = useState<Record<number, boolean>>({})
   const [lectureForms, setLectureForms] = useState<Record<number, {
     title: string
     video_url: string
@@ -96,6 +100,25 @@ export function CurriculumBuilderPage() {
     mutationFn: ({ sectionId, lectureId }: { sectionId: number; lectureId: number }) =>
       api.deleteLecture(token!, courseId, sectionId, lectureId),
     onSuccess: invalidate,
+  })
+
+  const segmentsMutation = useMutation({
+    mutationFn: ({
+      sectionId,
+      youtube_url,
+      parts,
+      is_preview,
+    }: {
+      sectionId: number
+      youtube_url: string
+      parts: { title: string; start_seconds: number; end_seconds: number }[]
+      is_preview: boolean
+    }) => api.createYouTubeSegments(token!, courseId, sectionId, { youtube_url, parts, is_preview }),
+    onSuccess: (_, { sectionId }) => {
+      setSegmentUrl((p) => ({ ...p, [sectionId]: '' }))
+      setSegmentParts((p) => ({ ...p, [sectionId]: [] }))
+      invalidate()
+    },
   })
 
   const bulkYouTubeMutation = useMutation({
@@ -296,7 +319,7 @@ export function CurriculumBuilderPage() {
                     Hanya ID YouTube yang disimpan. Durasi diisi otomatis dari pemutar saat preview/disimpan, atau saat pertama kali diputar.
                   </p>
                   <textarea
-                    placeholder="Tempel banyak link YouTube (satu per baris) untuk membuat banyak lecture sekaligus"
+                    placeholder="Bulk link (satu per baris). Potong otomatis: URL 0:00-15:30 Judul bagian"
                     value={bulkLinks[section.id] ?? ''}
                     onChange={(e) =>
                       setBulkLinks((prev) => ({ ...prev, [section.id]: e.target.value }))
@@ -317,6 +340,118 @@ export function CurriculumBuilderPage() {
                   >
                     Buat lecture dari link (bulk)
                   </button>
+
+                  <div className="mt-4 rounded border border-dashed border-primary/40 bg-primary/5 p-3 sm:col-span-2">
+                    <p className="mb-2 text-sm font-bold text-primary">Potong satu video panjang → banyak lecture</p>
+                    <p className="mb-3 text-xs text-muted">
+                      Satu link (mis. playlist Programmer Zaman Now), lalu tentukan part: judul + mulai/selesai (mm:ss atau h:mm:ss).
+                      Semua part pakai video ID yang sama; pemutar mulai/berhenti di waktu yang kamu set.
+                    </p>
+                    <input
+                      placeholder="Link YouTube sumber (satu video panjang)"
+                      value={segmentUrl[section.id] ?? ''}
+                      onChange={(e) => setSegmentUrl((p) => ({ ...p, [section.id]: e.target.value }))}
+                      className="mb-2 w-full rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                    />
+                    {(segmentParts[section.id]?.length ? segmentParts[section.id] : [{ title: '', start: '0:00', end: '' }]).map(
+                      (part, idx) => (
+                        <div key={idx} className="mb-2 grid gap-2 sm:grid-cols-[1fr_5rem_5rem_auto]">
+                          <input
+                            placeholder={`Judul part ${idx + 1}`}
+                            value={part.title}
+                            onChange={(e) => {
+                              const base = segmentParts[section.id]?.length
+                                ? [...segmentParts[section.id]!]
+                                : [{ title: '', start: '0:00', end: '' }]
+                              base[idx] = { ...base[idx]!, title: e.target.value }
+                              setSegmentParts((p) => ({ ...p, [section.id]: base }))
+                            }}
+                            className="rounded border border-border px-2 py-1.5 text-sm"
+                          />
+                          <input
+                            placeholder="Mulai"
+                            value={part.start}
+                            onChange={(e) => {
+                              const base = [...(segmentParts[section.id] ?? [{ title: '', start: '0:00', end: '' }])]
+                              base[idx] = { ...base[idx]!, start: e.target.value }
+                              setSegmentParts((p) => ({ ...p, [section.id]: base }))
+                            }}
+                            className="rounded border border-border px-2 py-1.5 text-sm"
+                          />
+                          <input
+                            placeholder="Selesai"
+                            value={part.end}
+                            onChange={(e) => {
+                              const base = [...(segmentParts[section.id] ?? [{ title: '', start: '0:00', end: '' }])]
+                              base[idx] = { ...base[idx]!, end: e.target.value }
+                              setSegmentParts((p) => ({ ...p, [section.id]: base }))
+                            }}
+                            className="rounded border border-border px-2 py-1.5 text-sm"
+                          />
+                          <button
+                            type="button"
+                            className="text-xs text-red-600"
+                            onClick={() => {
+                              const base = [...(segmentParts[section.id] ?? [])]
+                              base.splice(idx, 1)
+                              setSegmentParts((p) => ({ ...p, [section.id]: base }))
+                            }}
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      ),
+                    )}
+                    <div className="mt-2 flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-primary"
+                        onClick={() => {
+                          const prev = segmentParts[section.id] ?? [{ title: '', start: '0:00', end: '' }]
+                          const last = prev[prev.length - 1]
+                          const nextStart = last?.end?.trim() ? last.end : last?.start ?? '0:00'
+                          setSegmentParts((p) => ({
+                            ...p,
+                            [section.id]: [...prev, { title: '', start: nextStart, end: '' }],
+                          }))
+                        }}
+                      >
+                        + Tambah part
+                      </button>
+                      <label className="flex items-center gap-2 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={segmentPreview[section.id] ?? false}
+                          onChange={(e) =>
+                            setSegmentPreview((p) => ({ ...p, [section.id]: e.target.checked }))
+                          }
+                        />
+                        Tandai sebagai preview gratis
+                      </label>
+                      <button
+                        type="button"
+                        disabled={segmentsMutation.isPending || !(segmentUrl[section.id]?.trim())}
+                        onClick={() => {
+                          const parts = partsToPayload(
+                            segmentParts[section.id]?.length
+                              ? segmentParts[section.id]!
+                              : [{ title: 'Part 1', start: '0:00', end: '' }],
+                          ).filter((p) => p.title)
+                          if (parts.length === 0) return
+                          segmentsMutation.mutate({
+                            sectionId: section.id,
+                            youtube_url: segmentUrl[section.id]!,
+                            parts,
+                            is_preview: segmentPreview[section.id] ?? false,
+                          })
+                        }}
+                        className="rounded bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-primary-dark disabled:opacity-50"
+                      >
+                        Buat {segmentParts[section.id]?.length || 1} lecture dari part
+                      </button>
+                    </div>
+                  </div>
+
                   <input
                     type="datetime-local"
                     value={form.available_at}

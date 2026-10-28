@@ -1,30 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Clock, Gift, Globe, Play, ShoppingCart, ThumbsUp, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { VideoEmbed } from '@/components/VideoEmbed'
+import { PreviewLecturePlayer } from '@/components/PreviewLecturePlayer'
 import { QuestionThread } from '@/components/QuestionThread'
 import { StarRating } from '@/components/StarRating'
-import { api, mediaUrl, resolveLectureVideoSrc, type Lecture } from '@/lib/api'
+import { api, mediaUrl, type Lecture } from '@/lib/api'
 import { ApiError } from '@/lib/api-error'
 import { formatDuration, formatPrice, learnUrl } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
-
-function PreviewMedia({
-  lecture,
-  fallbackUrl,
-  title,
-}: {
-  lecture?: Lecture | null
-  fallbackUrl?: string
-  title: string
-}) {
-  const src = lecture ? resolveLectureVideoSrc(lecture) : fallbackUrl ? mediaUrl(fallbackUrl) : ''
-  return <VideoEmbed src={src} title={title} />
-}
 
 export function CourseDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -91,6 +78,12 @@ export function CourseDetailPage() {
   const previewLectures = curriculum.flatMap((s) =>
     (s.lectures ?? []).filter((l) => l.is_preview),
   )
+
+  useEffect(() => {
+    if (previewLectures.length > 0 && !previewLecture) {
+      setPreviewLecture(previewLectures[0]!)
+    }
+  }, [previewLectures, previewLecture])
 
   function selectPreview(lecture: Lecture) {
     setPreviewLecture(lecture)
@@ -225,7 +218,7 @@ export function CourseDetailPage() {
           <div className="hidden lg:block">
             <div className="overflow-hidden rounded border border-border bg-surface text-dark shadow-xl">
               {previewLecture ? (
-                <PreviewMedia lecture={previewLecture} title={previewLecture.title} />
+                <PreviewLecturePlayer lecture={previewLecture} title={previewLecture.title} token={token} />
               ) : course.cover_image ? (
                 <img src={mediaUrl(course.cover_image)} alt={course.title} className="aspect-video w-full object-cover" />
               ) : (
@@ -340,9 +333,10 @@ export function CourseDetailPage() {
               {previewLecture && (
                 <section ref={previewPlayerRef} className="scroll-mt-24">
                   <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
-                    <PreviewMedia
+                    <PreviewLecturePlayer
                       lecture={previewLecture}
                       title={previewLecture.title}
+                      token={token}
                     />
                     <div className="border-t border-border px-4 py-3">
                       <p className="font-semibold">{previewLecture.title}</p>

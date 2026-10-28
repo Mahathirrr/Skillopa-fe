@@ -85,6 +85,18 @@ export const instructorApi = {
     )
   },
 
+  createYouTubeSegments(
+    token: string,
+    courseId: number,
+    sectionId: number,
+    body: { youtube_url: string; is_preview?: boolean; parts: { title: string; start_seconds: number; end_seconds: number }[] },
+  ) {
+    return request<{ lectures: Lecture[] }>(
+      `/courses/${courseId}/sections/${sectionId}/lectures/youtube-segments`,
+      { method: 'POST', body, token },
+    )
+  },
+
   refreshLectureYouTube(token: string, lectureId: number) {
     return request<{ lecture: Lecture }>(`/courses/lectures/${lectureId}/youtube/refresh`, {
       method: 'POST',

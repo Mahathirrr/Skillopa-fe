@@ -5,7 +5,7 @@ type SkillopaLogoProps = {
   alt?: string
 }
 
-/** Brand mark — same asset as /favicon.svg */
+/** Brand mark: same asset as /favicon.svg */
 export function SkillopaLogo({ className, alt = 'Skillopa' }: SkillopaLogoProps) {
   return (
     <img

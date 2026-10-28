@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api } from '@/lib/api'
+import { EMPTY_DISPLAY } from '@/lib/empty-display'
 import { useAuthStore } from '@/stores/auth'
 
 export function AdminAuditPage() {
@@ -78,8 +79,8 @@ export function AdminAuditPage() {
                       {ev.entity_type}
                       {ev.entity_id ? `#${ev.entity_id}` : ''}
                     </td>
-                    <td className="p-3">{ev.actor_user_id ?? '—'}</td>
-                    <td className="p-3 text-muted">{ev.ip ?? '—'}</td>
+                    <td className="p-3">{ev.actor_user_id ?? EMPTY_DISPLAY}</td>
+                    <td className="p-3 text-muted">{ev.ip ?? EMPTY_DISPLAY}</td>
                   </tr>
                 ))
               )}

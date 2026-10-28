@@ -28,7 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Explicit button/link contrast — avoid inherit making white-on-white */
+/* Explicit button/link contrast: avoid inherit making white-on-white */
 .btn-on-dark {
   color: var(--color-ink) !important;
   background-color: #fff;
@@ -85,7 +85,7 @@ a[href],
   overflow: hidden;
 }
 
-/* Lenis — landing page smooth scroll (subtle, non-blocking) */
+/* Lenis: landing page smooth scroll (subtle, non-blocking) */
 html.lenis,
 html.lenis body {
   height: auto;

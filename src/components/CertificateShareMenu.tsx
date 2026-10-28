@@ -44,7 +44,7 @@ export function CertificateShareMenu({ pageUrl, certTitle, userName, className }
   async function doCopy() {
     const ok = await copyText(pageUrl)
     setCopied(ok)
-    setStatus(ok ? 'Link disalin ke clipboard' : 'Gagal menyalin — pilih link di bawah')
+    setStatus(ok ? 'Link disalin ke clipboard' : 'Gagal menyalin. Pilih link di bawah')
     window.setTimeout(() => {
       setCopied(false)
       setStatus(null)
@@ -55,7 +55,7 @@ export function CertificateShareMenu({ pageUrl, certTitle, userName, className }
     if (!navigator.share) return 'unavailable'
     try {
       await navigator.share({
-        title: `Sertifikat Skillopa — ${certTitle}`,
+        title: `Sertifikat Skillopa: ${certTitle}`,
         text: message,
         url: pageUrl,
       })

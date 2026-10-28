@@ -9,7 +9,7 @@ type Props = {
   token?: string | null
 }
 
-/** Preview on course detail — supports YouTube ID-only lectures (no embed URL in JSON). */
+/** Preview on course detail; supports YouTube ID-only lectures (no embed URL in JSON). */
 export function PreviewLecturePlayer({ lecture, title, token }: Props) {
   if (lecture.has_youtube) {
     return (

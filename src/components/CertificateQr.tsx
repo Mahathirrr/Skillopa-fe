@@ -7,7 +7,7 @@ type Props = {
   className?: string
 }
 
-/** QR same-origin (data URL) — aman untuk export PDF. */
+/** QR same-origin (data URL), aman untuk export PDF. */
 export function CertificateQr({ value, size = 64, className }: Props) {
   const [src, setSrc] = useState<string | null>(null)
 

@@ -93,7 +93,7 @@ function QuizPanel({ lectureId, token, onComplete }: { lectureId: number; token:
     return (
       <div className="p-4 text-center">
         <p className={`text-lg font-bold ${result.passed ? 'text-green-600' : 'text-red-600'}`}>
-          Score: {Math.round(result.score)}% — {result.passed ? 'Passed!' : 'Try again'}
+          Score: {Math.round(result.score)}%. {result.passed ? 'Passed!' : 'Try again'}
         </p>
       </div>
     )

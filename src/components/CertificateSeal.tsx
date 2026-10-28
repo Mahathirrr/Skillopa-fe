@@ -1,6 +1,6 @@
 type Props = { className?: string; code?: string }
 
-/** Lencana resmi — double ring + ribbon, bukan lingkaran teks kosong. */
+/** Lencana resmi: double ring + ribbon, bukan lingkaran teks kosong. */
 export function CertificateSeal({ className, code }: Props) {
   return (
     <svg

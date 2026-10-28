@@ -171,7 +171,7 @@ export const privacyDocumentId: LegalDocument = {
         'Penyedia hosting, database, email transaksional (misalnya Resend), dan CDN.',
         'Penyedia pembayaran untuk checkout.',
         'Penyedia OAuth (Google/GitHub) jika Anda menggunakannya.',
-        'Penyedia video/embedding (misalnya YouTube) saat Anda memutar materi — tunduk kebijakan mereka.',
+        'Penyedia video/embedding (misalnya YouTube) saat Anda memutar materi, tunduk kebijakan mereka.',
         'Otoritas publik jika diwajibkan hukum.',
       ],
     },

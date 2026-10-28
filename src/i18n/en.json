@@ -151,7 +151,7 @@
   },
   "myLearning": {
     "title": "My learning",
-    "subtitle": "Continue courses you enrolled in — free and paid",
+    "subtitle": "Continue courses you enrolled in, free and paid",
     "emptyTitle": "No enrolled courses yet",
     "emptyHint": "Browse the catalog and enroll in free courses or purchase paid ones.",
     "browse": "Browse courses",
@@ -190,7 +190,7 @@
     "statRating": "{{rating}} rating",
     "avatarAlt": "Profile photo of {{name}}",
     "notFound": "Instructor profile not found",
-    "metaDescription": "Courses by {{name}} — {{count}} published on Skillopa",
+    "metaDescription": "Courses by {{name}}. {{count}} published on Skillopa",
     "publishedCourses": "Published courses",
     "noCourses": "No published courses yet.",
     "loadMore": "Load more",
@@ -275,9 +275,9 @@
     "emptyCart": "Your cart is empty.",
     "confirmFreeEnroll": "Enroll in free courses",
     "processing": "Processing...",
-    "paymentNotAvailable": "Paid courses require payment. Payment is not available yet — remove paid courses from your cart or choose free courses.",
+    "paymentNotAvailable": "Paid courses require payment. Payment is not available yet. Remove paid courses from your cart or choose free courses.",
     "demoCheckout": "Platform demo checkout",
-    "demoCheckoutDesc": "No live payment gateway — place a pending order, then confirm to simulate payment and unlock course access.",
+    "demoCheckoutDesc": "No live payment gateway. Place a pending order, then confirm to simulate payment and unlock course access.",
     "placeDemoOrder": "Place demo order",
     "placeMayarOrder": "Continue to Mayar payment",
     "confirmDemoPayment": "Confirm demo payment",
@@ -290,11 +290,11 @@
     "selectBundle": "Select bundle",
     "enrollBundle": "Enroll in bundle",
     "freeWithCoupon": "Enroll free (coupon)",
-    "freeWithCouponHint": "Total is zero — course access unlocks immediately after checkout."
+    "freeWithCouponHint": "Total is zero. Course access unlocks immediately after checkout."
   },
   "coupons": {
     "instructorTitle": "Instructor coupons",
-    "instructorPolicy": "Up to 50% off, 1–500 redemptions, valid up to 90 days. 100% off coupons are platform-admin only.",
+    "instructorPolicy": "Up to 50% off, 1 to 500 redemptions, valid up to 90 days. 100% off coupons are platform-admin only.",
     "adminTitle": "Platform coupons",
     "adminHint": "Admins can create up to 100% off (quota required). Seeds include WELCOME10 and GRATIS100.",
     "adminMaxUsesHint": "Required for 100% off; 0 = unlimited.",
@@ -360,7 +360,7 @@
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "Enter your password",
     "namePlaceholder": "e.g. Alex Johnson",
-    "nameHint": "At least 2 characters — use your real name for certificates.",
+    "nameHint": "At least 2 characters. Use your real name for certificates.",
     "passwordHint": "At least 6 characters. Mix letters and numbers for stronger security.",
     "passwordRule": {
       "length": "At least 6 characters",

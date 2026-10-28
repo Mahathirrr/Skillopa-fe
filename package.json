@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint && node scripts/check-i18n-json.mjs",
+    "lint": "oxlint && node scripts/check-i18n-json.mjs && node scripts/check-no-em-dash.mjs",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://skillopa.showcaseproject.my.id playwright test",

@@ -1,7 +1,7 @@
 import { toCanvas } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 
-/** Lebar kartu sertifikat (px) — rasio A4 landscape 297:210 */
+/** Lebar kartu sertifikat (px), rasio A4 landscape 297:210 */
 export const CERT_CAPTURE_W = 920
 export const CERT_CAPTURE_H = Math.round((CERT_CAPTURE_W * 210) / 297)
 const A4_LANDSCAPE_MM = { w: 297, h: 210 }
@@ -60,7 +60,7 @@ function normalizeCloneForRaster(clone: HTMLElement) {
 }
 
 /**
- * Clone ke (0,0) fixed — html-to-image tidak lagi menangkap offset layout
+ * Clone ke (0,0) fixed; html-to-image tidak lagi menangkap offset layout
  * (penyebab PDF kosong kiri + konten nyempil kanan).
  */
 async function captureOffscreen(source: HTMLElement): Promise<HTMLCanvasElement> {

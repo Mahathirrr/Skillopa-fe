@@ -1,4 +1,4 @@
-/** Salin teks — clipboard API + fallback execCommand. */
+/** Salin teks: clipboard API + fallback execCommand. */
 export async function copyText(text: string): Promise<boolean> {
   if (!text) return false
   try {

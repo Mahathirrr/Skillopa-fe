@@ -21,6 +21,7 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { StarRating } from '@/components/StarRating'
 import { useLandingSmoothScroll } from '@/hooks/useLandingSmoothScroll'
 import { api } from '@/lib/api'
+import { EMPTY_DISPLAY } from '@/lib/empty-display'
 import heroImage from '@/assets/hero.png'
 
 const categoryIcons: Record<string, typeof Code2> = {
@@ -94,23 +95,23 @@ export function HomePage() {
   const stats = [
     {
       label: t('home.statsCourses'),
-      value: platformStats ? String(platformStats.total_courses) : '—',
+      value: platformStats ? String(platformStats.total_courses) : EMPTY_DISPLAY,
     },
     {
       label: t('home.statsStudents'),
       value: platformStats
         ? platformStats.total_enrollments.toLocaleString()
-        : '—',
+        : EMPTY_DISPLAY,
     },
     {
       label: t('home.statsInstructors'),
-      value: platformStats ? String(platformStats.total_instructors) : '—',
+      value: platformStats ? String(platformStats.total_instructors) : EMPTY_DISPLAY,
     },
     {
       label: t('home.statsRating'),
       value: platformStats && platformStats.average_rating > 0
         ? platformStats.average_rating.toFixed(1)
-        : '—',
+        : EMPTY_DISPLAY,
     },
   ]
 

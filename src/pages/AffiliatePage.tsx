@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api } from '@/lib/api'
+import { EMPTY_DISPLAY } from '@/lib/empty-display'
 import { formatPrice } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
@@ -134,7 +135,7 @@ export function AffiliatePage() {
                   <td className="px-4 py-3 font-semibold">{formatPrice(c.amount)}</td>
                   <td className="px-4 py-3 capitalize">{c.status}</td>
                   <td className="px-4 py-3 text-muted">
-                    {c.created_at ? new Date(c.created_at).toLocaleDateString() : '—'}
+                    {c.created_at ? new Date(c.created_at).toLocaleDateString() : EMPTY_DISPLAY}
                   </td>
                 </tr>
               ))}

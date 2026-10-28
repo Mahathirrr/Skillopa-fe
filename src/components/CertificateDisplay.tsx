@@ -52,7 +52,7 @@ export const CertificateDisplay = forwardRef<HTMLElement, Props>(function Certif
       <div className="absolute inset-3 border border-[#5624d0]/25 bg-white sm:inset-4">
         <div className="absolute inset-2 border border-[#5624d0]/12" aria-hidden />
 
-        {/* Watermark — ukuran tetap (bukan fill box), supaya PDF = web dan tidak mendominasi */}
+        {/* Watermark: ukuran tetap (bukan fill box), supaya PDF = web dan tidak mendominasi */}
         <div
           data-certificate-watermark
           className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"

@@ -63,7 +63,7 @@ export function InstructorDashboardPage() {
             <Link to="/profile" className="font-semibold text-primary hover:underline">
               {t('instructor.viewFullProfile')}
             </Link>
-            {completenessData.missing.length > 0 && ` — ${completenessData.missing.join(', ')}`}
+            {completenessData.missing.length > 0 && `: ${completenessData.missing.join(', ')}`}
           </p>
         </div>
       )}

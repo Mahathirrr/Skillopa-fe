@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { api } from '@/lib/api'
+import { EMPTY_DISPLAY } from '@/lib/empty-display'
 import { useAuthStore } from '@/stores/auth'
 
 export function InstructorStudentsPage() {
@@ -72,7 +73,7 @@ export function InstructorStudentsPage() {
             <div className="rounded border border-border bg-surface">
               <div className="border-b border-border px-4 py-3">
                 <p className="font-semibold">
-                  {selectedCourse?.title} — {students.length} student{students.length !== 1 ? 's' : ''}
+                  {selectedCourse?.title}: {students.length} student{students.length !== 1 ? 's' : ''}
                 </p>
               </div>
               {students.length === 0 ? (
@@ -106,7 +107,7 @@ export function InstructorStudentsPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-muted">
-                            {s.enrolled_at ? new Date(s.enrolled_at).toLocaleDateString() : '—'}
+                            {s.enrolled_at ? new Date(s.enrolled_at).toLocaleDateString() : EMPTY_DISPLAY}
                           </td>
                           <td className="px-4 py-3">
                             {s.completed_at ? (

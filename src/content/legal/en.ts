@@ -73,7 +73,7 @@ function termsDocumentEnSections(): LegalDocument['sections'] {
       paragraphs: [
         'Certificates are issued when course completion requirements are met.',
         'Each certificate has a public verification code. Forgery or tampering is prohibited.',
-        'Certificate names follow your profile — use your real name if certificates matter for formal use.',
+        'Certificate names follow your profile. Use your real name if certificates matter for formal use.',
       ],
     },
     {

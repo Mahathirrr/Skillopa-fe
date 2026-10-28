@@ -1,0 +1,18 @@
+---
+description: No em dash or en dash in frontend copy and source text
+globs:
+  - "src/**"
+  - "e2e/**"
+  - "docs/**"
+  - "i18n/**"
+alwaysApply: true
+---
+
+# Typography: no em/en dash
+
+1. **Never** use em dash (U+2014) or en dash (U+2013) in UI strings, i18n, legal copy, or comments in `src/`.
+2. Use comma, colon, period, or a single ASCII hyphen with spaces instead.
+3. Empty table cells: use `'-'` (ASCII hyphen), not Unicode dash characters.
+4. **Allowed**: CSS custom properties (`--color-primary`), BEM (`block--modifier`), CLI flags, eslint `--` comments.
+
+CI: `node scripts/check-no-em-dash.mjs` (runs in `npm run lint`).

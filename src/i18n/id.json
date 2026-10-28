@@ -180,7 +180,17 @@
     "loadMore": "Muat lebih banyak",
     "profileCompleteness": "Kelengkapan profil",
     "socialLinks": "Tautan sosial",
-    "publicProfileLink": "Profil publik:"
+    "publicProfileLink": "Profil publik:",
+    "quizBuilder": "Pembuat kuis",
+    "addQuestion": "Tambah pertanyaan",
+    "questionText": "Teks pertanyaan",
+    "options": "Pilihan",
+    "correct": "Benar",
+    "uploadVideo": "Unggah video",
+    "uploadDocument": "Unggah dokumen",
+    "dripSchedule": "Tanggal buka drip",
+    "manageQuiz": "Kelola kuis",
+    "translationFields": "Terjemahan (i18n)"
   },
   "bundles": {
     "title": "Paket kursus",
@@ -236,18 +246,6 @@
     "noPending": "Tidak ada kursus menunggu moderasi.",
     "submitForReview": "Ajukan moderasi",
     "status": "Status moderasi"
-  },
-  "instructor": {
-    "quizBuilder": "Pembuat kuis",
-    "addQuestion": "Tambah pertanyaan",
-    "questionText": "Teks pertanyaan",
-    "options": "Pilihan",
-    "correct": "Benar",
-    "uploadVideo": "Unggah video",
-    "uploadDocument": "Unggah dokumen",
-    "dripSchedule": "Tanggal buka drip",
-    "manageQuiz": "Kelola kuis",
-    "translationFields": "Terjemahan (i18n)"
   },
   "checkout": {
     "title": "Keranjang",

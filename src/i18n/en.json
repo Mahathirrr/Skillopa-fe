@@ -180,7 +180,17 @@
     "loadMore": "Load more",
     "profileCompleteness": "Profile completeness",
     "socialLinks": "Social links",
-    "publicProfileLink": "Public profile:"
+    "publicProfileLink": "Public profile:",
+    "quizBuilder": "Quiz builder",
+    "addQuestion": "Add question",
+    "questionText": "Question text",
+    "options": "Options",
+    "correct": "Correct",
+    "uploadVideo": "Upload video",
+    "uploadDocument": "Upload document",
+    "dripSchedule": "Drip unlock date",
+    "manageQuiz": "Manage quiz",
+    "translationFields": "Translations (i18n)"
   },
   "bundles": {
     "title": "Course bundles",
@@ -237,18 +247,6 @@
     "noPending": "No courses pending moderation.",
     "submitForReview": "Submit for moderation",
     "status": "Moderation status"
-  },
-  "instructor": {
-    "quizBuilder": "Quiz builder",
-    "addQuestion": "Add question",
-    "questionText": "Question text",
-    "options": "Options",
-    "correct": "Correct",
-    "uploadVideo": "Upload video",
-    "uploadDocument": "Upload document",
-    "dripSchedule": "Drip unlock date",
-    "manageQuiz": "Manage quiz",
-    "translationFields": "Translations (i18n)"
   },
   "checkout": {
     "title": "Checkout",

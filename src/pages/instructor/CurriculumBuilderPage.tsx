@@ -17,6 +17,7 @@ export function CurriculumBuilderPage() {
   const { t } = useTranslation()
 
   const [sectionTitle, setSectionTitle] = useState('')
+  const [bulkLinks, setBulkLinks] = useState<Record<number, string>>({})
   const [lectureForms, setLectureForms] = useState<Record<number, {
     title: string
     video_url: string
@@ -95,6 +96,15 @@ export function CurriculumBuilderPage() {
     mutationFn: ({ sectionId, lectureId }: { sectionId: number; lectureId: number }) =>
       api.deleteLecture(token!, courseId, sectionId, lectureId),
     onSuccess: invalidate,
+  })
+
+  const bulkYouTubeMutation = useMutation({
+    mutationFn: ({ sectionId, links }: { sectionId: number; links: string }) =>
+      api.bulkCreateYouTubeLectures(token!, courseId, sectionId, links),
+    onSuccess: (_, { sectionId }) => {
+      setBulkLinks((prev) => ({ ...prev, [sectionId]: '' }))
+      invalidate()
+    },
   })
 
   const dripMutation = useMutation({
@@ -177,8 +187,33 @@ export function CurriculumBuilderPage() {
               <div className="divide-y divide-border">
                 {section.lectures?.map((lecture) => (
                   <div key={lecture.id} className="px-4 py-3 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span>{lecture.title}</span>
+                    <div className="flex items-center justify-between gap-3">
+                      {lecture.youtube_thumbnail_url ? (
+                        <img
+                          src={lecture.youtube_thumbnail_url}
+                          alt=""
+                          className="h-10 w-[4.5rem] shrink-0 rounded object-cover"
+                          loading="lazy"
+                        />
+                      ) : null}
+                      <span className="flex-1">{lecture.title}</span>
+                      {lecture.video_availability && (
+                        <span
+                          className={`text-xs font-semibold ${
+                            lecture.video_availability === 'ok'
+                              ? 'text-green-600'
+                              : lecture.video_availability === 'problem'
+                                ? 'text-red-600'
+                                : 'text-muted'
+                          }`}
+                        >
+                          {lecture.video_availability === 'ok'
+                            ? 'OK'
+                            : lecture.video_availability === 'problem'
+                              ? 'Bermasalah'
+                              : 'Belum diverifikasi'}
+                        </span>
+                      )}
                       <div className="flex items-center gap-2">
                         {lecture.content_type === 'quiz' && (
                           <Link
@@ -247,7 +282,7 @@ export function CurriculumBuilderPage() {
                     <option value="assignment">Assignment</option>
                   </select>
                   <input
-                    placeholder="Video URL (optional)"
+                    placeholder="Link YouTube (watch, youtu.be, shorts, embed…)"
                     value={form.video_url}
                     onChange={(e) =>
                       setLectureForms((prev) => ({
@@ -255,11 +290,33 @@ export function CurriculumBuilderPage() {
                         [section.id]: { ...form, video_url: e.target.value },
                       }))
                     }
-                    className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                    className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary sm:col-span-2"
                   />
-                  <p className="text-xs text-muted">
-                    Durasi video YouTube/Vimeo otomatis diambil dari link saat disimpan.
+                  <p className="text-xs text-muted sm:col-span-2">
+                    Hanya ID YouTube yang disimpan. Durasi diisi otomatis dari pemutar saat preview/disimpan, atau saat pertama kali diputar.
                   </p>
+                  <textarea
+                    placeholder="Tempel banyak link YouTube (satu per baris) untuk membuat banyak lecture sekaligus"
+                    value={bulkLinks[section.id] ?? ''}
+                    onChange={(e) =>
+                      setBulkLinks((prev) => ({ ...prev, [section.id]: e.target.value }))
+                    }
+                    rows={4}
+                    className="rounded border border-border px-3 py-2 text-sm outline-none focus:border-primary sm:col-span-2"
+                  />
+                  <button
+                    type="button"
+                    disabled={!bulkLinks[section.id]?.trim() || bulkYouTubeMutation.isPending}
+                    onClick={() =>
+                      bulkYouTubeMutation.mutate({
+                        sectionId: section.id,
+                        links: bulkLinks[section.id] ?? '',
+                      })
+                    }
+                    className="rounded border border-primary px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/5 disabled:opacity-50 sm:col-span-2"
+                  >
+                    Buat lecture dari link (bulk)
+                  </button>
                   <input
                     type="datetime-local"
                     value={form.available_at}

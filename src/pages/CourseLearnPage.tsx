@@ -11,12 +11,14 @@ import {
   Play,
   StickyNote,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { VideoEmbed } from '@/components/VideoEmbed'
+import { YouTubePlayer } from '@/components/YouTubePlayer'
+import { YouTubeThumbnail } from '@/components/YouTubeThumbnail'
 import { QuestionThread } from '@/components/QuestionThread'
 import type { Lecture, Section } from '@/lib/api'
 import { api, mediaUrl, resolveLectureVideoSrc } from '@/lib/api'
@@ -285,6 +287,11 @@ export function CourseLearnPage() {
   const course = data?.course
   const curriculum = data?.curriculum
 
+  useEffect(() => {
+    if (!curriculum?.length) return
+    setExpandedSections(new Set(curriculum.map((s) => s.id)))
+  }, [curriculum])
+
   const allLectures = useMemo(
     () => (curriculum ?? []).flatMap((s) => s.lectures ?? []),
     [curriculum],
@@ -450,6 +457,16 @@ export function CourseLearnPage() {
               )}
               <p className="mt-4 text-sm text-white/60">{t('learn.dripMessage')}</p>
             </div>
+          ) : current?.has_youtube && current?.id ? (
+            <div className="w-full max-w-5xl">
+              <YouTubePlayer
+                lectureId={current.id}
+                title={current.title}
+                token={token}
+                resumeSeconds={videoStartSeconds}
+                onSavePosition={saveVideoPosition}
+              />
+            </div>
           ) : videoSrc ? (
             <div className="w-full max-w-5xl">
               <VideoEmbed
@@ -562,10 +579,17 @@ export function CourseLearnPage() {
                           type="button"
                           onClick={() => selectLecture(lecture)}
                           disabled={locked}
-                          className={`flex w-full items-center gap-2 border-t border-border px-4 py-2.5 pl-8 text-left text-sm hover:bg-bg disabled:cursor-not-allowed disabled:opacity-50 ${
+                          className={`flex w-full items-center gap-2 border-t border-border px-4 py-2.5 pl-6 text-left text-sm hover:bg-bg disabled:cursor-not-allowed disabled:opacity-50 ${
                             current?.id === lecture.id ? 'bg-primary/5 font-semibold text-primary' : ''
                           }`}
                         >
+                          {lecture.youtube_thumbnail_url && lecture.content_type === 'video' ? (
+                            <YouTubeThumbnail
+                              src={lecture.youtube_thumbnail_url}
+                              alt=""
+                              className="h-10 w-[4.5rem] shrink-0 rounded object-cover"
+                            />
+                          ) : null}
                           {locked ? (
                             <Lock className="h-3.5 w-3.5 shrink-0 text-muted" />
                           ) : completedIds.has(lecture.id) ? (

@@ -78,6 +78,20 @@ export const instructorApi = {
     })
   },
 
+  bulkCreateYouTubeLectures(token: string, courseId: number, sectionId: number, links: string) {
+    return request<{ lectures: Lecture[] }>(
+      `/courses/${courseId}/sections/${sectionId}/lectures/youtube-bulk`,
+      { method: 'POST', body: { links }, token },
+    )
+  },
+
+  refreshLectureYouTube(token: string, lectureId: number) {
+    return request<{ lecture: Lecture }>(`/courses/lectures/${lectureId}/youtube/refresh`, {
+      method: 'POST',
+      token,
+    })
+  },
+
   getInstructorAnalytics(token: string) {
     return request<{ analytics: InstructorAnalytics }>('/instructor/analytics', { token })
   },

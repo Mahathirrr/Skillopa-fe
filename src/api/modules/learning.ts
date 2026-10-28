@@ -99,4 +99,27 @@ export const learningApi = {
       token,
     })
   },
+
+  getLecturePlayback(lectureId: number, token?: string | null) {
+    return request<{ provider: string; video_id: string; start_seconds: number; origin: string }>(
+      `/lectures/${lectureId}/playback`,
+      { token: token ?? undefined },
+    )
+  },
+
+  setLectureDuration(token: string, lectureId: number, durationSeconds: number) {
+    return request<void>(`/lectures/${lectureId}/duration`, {
+      method: 'PATCH',
+      body: { duration_seconds: durationSeconds },
+      token,
+    })
+  },
+
+  reportLecturePlayerError(token: string, lectureId: number, errorCode: number) {
+    return request<void>(`/lectures/${lectureId}/player-error`, {
+      method: 'POST',
+      body: { error_code: errorCode },
+      token,
+    })
+  },
 }

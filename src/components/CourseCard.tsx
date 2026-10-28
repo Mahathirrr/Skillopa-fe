@@ -23,17 +23,23 @@ export function CourseCard({ course, onAddToCart, onToggleWishlist, inWishlist, 
       )}
     >
       <Link to={courseUrl(course.slug)} className="relative block aspect-[16/9] overflow-hidden bg-dark-muted">
-        {course.cover_image ? (
+        {(() => {
+          const thumb =
+            course.preview_youtube_thumbnail_url ||
+            (course.cover_image?.startsWith('http') ? course.cover_image : course.cover_image ? mediaUrl(course.cover_image) : '')
+          return thumb ? (
           <img
-            src={mediaUrl(course.cover_image)}
+            src={thumb}
             alt={course.title}
             className="h-full w-full object-cover transition group-hover:scale-105"
+            loading="lazy"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white/80">
             <span className="px-4 text-center text-sm font-semibold">{course.title}</span>
           </div>
-        )}
+        )
+        })()}
         {course.is_free && (
           <span className="absolute left-2 top-2 rounded bg-accent px-2 py-0.5 text-xs font-bold text-ink">
             Free

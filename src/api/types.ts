@@ -52,6 +52,7 @@ export type Course = {
   level: string
   language?: string
   cover_image?: string
+  preview_youtube_thumbnail_url?: string
   preview_video_url?: string
   price: number
   is_free: boolean
@@ -73,6 +74,10 @@ export type Lecture = {
   title: string
   content_type: string
   video_url?: string
+  has_youtube?: boolean
+  youtube_title?: string
+  youtube_thumbnail_url?: string
+  video_availability?: 'ok' | 'problem' | 'unverified'
   text_content?: string
   file_url?: string
   local_media_path?: string
@@ -404,6 +409,7 @@ export type CreateCourseInput = {
   level: string
   language?: string
   cover_image?: string
+  preview_youtube_thumbnail_url?: string
   preview_video_url?: string
   price?: number
   is_free?: boolean
